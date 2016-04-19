@@ -5,17 +5,20 @@ use warnings;
 
 use parent 'AbstractJob';
 
-use threads;
-use threads::shared;
 use WebSocketClientWriter;
 
 sub new {
     my $class = shift;
-    my $args  = @_;
+    my %args  = @_;
 
-    my $self = $class->SUPER::new($args);
-    $self->{client} = $args->{client};
-    return $self;
+    my %self : shared;
+
+    $self{client}  = $args{client};
+    $self{data}    = $args{data};
+
+    bless( \%self, $class );
+
+    return ( \%self );
 }
 
 sub DoJob {

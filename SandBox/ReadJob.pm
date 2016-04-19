@@ -7,15 +7,32 @@ use lib '..';
 
 use parent 'AbstractJob';
 
-use threads;
-use threads::shared;
 use WebSocketClientWriter;
 
 sub new {
-    my $class = shift;
+    my ( $class, %args ) = @_;
+    my %self : shared;
+    $self{clients} = $args{clients};
+    $self{data}    = $args{data};
 
-    return $class->SUPER::new(@_);
+    bless( \%self, $class );
+
+    return ( \%self );
 }
+
+
+sub clients {
+    my ($self) = @_;
+    return $self->{clients};
+}
+
+
+sub data {
+    my ($self) = @_;
+    return $self->{clients};
+}
+
+
 
 sub DoJob {
     my ($self) = @_;
