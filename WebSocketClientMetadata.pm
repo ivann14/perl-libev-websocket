@@ -5,8 +5,6 @@ use warnings;
 
 use Protocol::WebSocket;
 
-#timer , dat pristup k loopu, lockovanie, IPV6,
-
 sub new {
     my ( $class, %args ) = @_;
 

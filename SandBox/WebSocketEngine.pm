@@ -3,8 +3,9 @@ package WebSocketEngine;
 use strict;
 use warnings;
 
+use lib '..';
+
 use parent 'AbstractWebSocketEngine';
-use WebSocketClient;
 use ReadJob;
 
 sub new {

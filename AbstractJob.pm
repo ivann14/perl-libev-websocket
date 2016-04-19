@@ -1,8 +1,10 @@
 package AbstractJob;
 
+use strict;
+use warnings;
+
 use threads;
 use threads::shared;
-use Thread::Queue;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -29,7 +31,7 @@ sub data {
 
 sub DoJob {
 
-    #die "This method must be overridden by a subclass of __PACKAGE__";
+    die "This method must be overridden by a subclass of __PACKAGE__";
 }
 
 1;

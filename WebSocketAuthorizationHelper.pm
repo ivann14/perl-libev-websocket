@@ -1,20 +1,18 @@
 package WebSocketAuthorizationHelper;
 
 use Data::GUID;
-use IO::Socket;
 use Protocol::WebSocket;
-use Data::Dumper;
 
 use WebSocketClientMetadata;
-use WebSocketIOManager;
 use WebSocketClientWriter;
 
 sub new {
     my ( $class, %args ) = @_;
+
     my $self = bless {
         engine            => $args{engine},
-        clients           => $args{clients},
-        clients_metadatas => $args{clients_metadatas},
+        clients           => $args{client}            || $args{engine}->clients,
+        clients_metadatas => $args{clients_metadatas} || $args{engine}->clients_metadatas
     }, $class;
 
     return $self;

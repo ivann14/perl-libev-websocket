@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
-use lib "/home/ivann/Downloads/PerlSocket/";
+
+use lib '..';
+
 use threads;
 use threads::shared;
 use Test::More tests => 10;

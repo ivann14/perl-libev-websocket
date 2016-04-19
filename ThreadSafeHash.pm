@@ -1,16 +1,10 @@
 package ThreadSafeHash;
 
-use Data::Dumper;
 use strict;
 use warnings;
 
-our $VERSION = '3.07';
-$VERSION = eval $VERSION;
-
-use threads::shared 1.21;
-
-# Carp errors from threads::shared calls should complain about caller
-our @CARP_NOT = ("threads::shared");
+use threads;
+use threads::shared;
 
 sub new {
     my $class = shift;
@@ -82,3 +76,5 @@ sub Hash {
     my ($self) = @_;
     return $self->{'hash'};
 }
+
+1;

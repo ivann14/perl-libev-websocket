@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
-use lib "/home/ivann/Downloads/PerlSocket/";
+
+use lib '..';
+
 use Test::More tests => 19;
 use Thread::Queue;
 use WebSocketClient;

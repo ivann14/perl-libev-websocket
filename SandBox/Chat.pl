@@ -1,24 +1,27 @@
+use strict;
+use warnings;
+
+use lib '..';
+
 use WebSocketServer;
-use WebSocketIOManager;
-use WebSocketEngine;
+use AbstractWebSocketEngine;
 use IO::Socket;
 
 my $port = 2222;
 my $ip   = "0.0.0.0";
 
-# Inet IPv6
-my $server = IO::Socket::INET->new(
+my $socket = IO::Socket::INET->new(
     Proto     => "tcp",
     LocalPort => $port,
     LocalHost => $ip,
-    Listen    => 1,
-    Reuse     => 1,
+    Listen    => 5,
+    Reuse     => 5,
     Type      => SOCK_STREAM,
     Blocking  => 0,
 ) or die "Error creating socket $!";
 
 my $server = WebSocketServer->new(
-    server                           => $server,
+    socket                           => $socket,
     websocket_engine                 => WebSocketEngine->new(),
     number_of_thread_workers         => 2,
     close_after_no_pong              => 20,

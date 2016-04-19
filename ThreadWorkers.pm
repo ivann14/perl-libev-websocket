@@ -1,10 +1,12 @@
 package ThreadWorkers;
 
-use 5.018;
+use strict;
+use warnings;
+
 use threads;
 use threads::shared;
+
 use Thread::Queue;
-use ReadJob;
 
 my $jobQueue : shared;
 my $process_async : shared = 0;

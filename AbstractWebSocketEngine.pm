@@ -4,10 +4,8 @@ use strict;
 use warnings;
 
 use WebSocketClient;
-use WebSocketClientHelper;
 use ReadJob;
 use PingReceivedJob;
-use AbstractJob;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -52,10 +50,12 @@ sub set_clients_metadatas {
     $self->{clients_metadatas} = $metadatas;
 }
 
+
 sub ping_after_seconds_of_inactivity {
     my ($self) = @_;
     return $self->{ping_after_seconds_of_inactivity};
 }
+
 
 sub close_after_no_pong {
     my ($self) = @_;
@@ -82,13 +82,14 @@ sub process_ping_data {
     my $job = PingReceivedJob->new( data => $data, client->$client );
 }
 
+
 sub process_client_disconnected {
     my ( $self, $client ) = @_;
 
-    WebSocketClientHelper::completely_remove_client( $self->clients,
-        $self->clients_metadatas, $client );
-
+    delete $self->clients_metadatas->{ $client->id };
+    $self->clients->Remove( $client->id );
 }
+
 
 sub pong_received {
     my ( $self, $bytes, $client ) = @_;
@@ -96,6 +97,7 @@ sub pong_received {
     # Reset pinged time, after pong is received
     $client->set_pinged("");
 }
+
 
 sub close_client_or_keep_alive {
     my ( $self, $currentClient ) = @_;
@@ -115,11 +117,13 @@ sub close_client_or_keep_alive {
     }
 }
 
+
 sub process_client_disconnecting {
     my ( $self, $client ) = @_;
 
     WebSocketClientWriter->new->close_client($client);
 }
+
 
 sub process_client_authentication {
     my ( $self, $client, $request ) = @_;

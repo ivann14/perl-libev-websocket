@@ -3,8 +3,10 @@ package ReadJob;
 use strict;
 use warnings;
 
-use AbstractJob;
+use lib '..';
+
 use parent 'AbstractJob';
+
 use threads;
 use threads::shared;
 use WebSocketClientWriter;

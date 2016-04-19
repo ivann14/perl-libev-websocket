@@ -3,8 +3,8 @@ package PingReceivedJob;
 use strict;
 use warnings;
 
-use AbstractJob;
 use parent 'AbstractJob';
+
 use threads;
 use threads::shared;
 use WebSocketClientWriter;

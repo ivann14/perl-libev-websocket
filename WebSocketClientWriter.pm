@@ -5,12 +5,10 @@ use warnings;
 
 use Protocol::WebSocket;
 
-#timer , dat pristup k loopu, lockovanie, IPV6,
-
 sub new {
     my ( $class, %args ) = @_;
 
-    my $self = bless { clients => $args{clients}, }, $class;
+    my $self = bless { clients => $args{clients} }, $class;
 
     return $self;
 }
@@ -40,10 +38,10 @@ sub send_frame_to_client {
 
     my $clients = $self->{clients};
     my $client  = $clients->GetValue($client_id);
-    $self->send_client_a_frame( $client, $frame );
+    $self->enqueue_frame_for_client ( $client, $frame );
 }
 
-sub send_client_a_frame {
+sub enqueue_frame_for_client {
     my ( $self, $client, $frame ) = @_;
     $client->writeBuffer->enqueue($frame);
 }
@@ -72,7 +70,7 @@ sub close_client {
 
     $frame->append($data);
 
-    $self->send_client_a_frame( $client, $frame );
+    $self->enqueue_frame_for_client ( $client, $frame );
 }
 
 1;

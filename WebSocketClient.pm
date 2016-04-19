@@ -5,8 +5,8 @@ use warnings;
 
 use threads;
 use threads::shared;
+
 use Thread::Queue;
-use Protocol::WebSocket;
 
 sub new {
     my ( $class, %args ) = @_;

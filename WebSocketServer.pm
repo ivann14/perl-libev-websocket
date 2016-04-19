@@ -20,7 +20,7 @@ sub new {
 
     my %hash;
     my $self = bless {
-        server                   => $args{server},
+        socket                   => $args{socket},
         websocket_engine         => $args{websocket_engine},
         clients                  => shared_clone( ThreadSafeHash->new() ),
         clients_metadatas        => {},
@@ -38,11 +38,6 @@ sub new {
 sub websocket_engine {
     my ($self) = @_;
     return $self->{websocket_engine};
-}
-
-sub server {
-    my ($self) = @_;
-    return $self->{server};
 }
 
 sub clients {
@@ -65,11 +60,15 @@ sub run_server {
 
     ThreadWorkers::init_thread_workers( $self->{number_of_thread_workers} );
 
+    my $authHelper = WebSocketAuthorizationHelper->new(
+    	engine => $self->websocket_engine
+    );
+
     my $w = $self->{loop}->io(
-        $self->server,
+        $self->{socket},
         EV::READ,
         sub {
-            my $connection = $self->server->accept();
+            my $connection = $self->{socket}->accept();
             if ($connection) {
 
                 # When client connects, create event that listens
@@ -84,12 +83,6 @@ sub run_server {
                         my $buffer     = $io_manager->read_from_fh( $w_io->fh );
 
                         if ($buffer) {
-                            my $authHelper = WebSocketAuthorizationHelper->new(
-                                engine            => $self->websocket_engine,
-                                clients           => $self->clients,
-                                clients_metadatas => $self->clients_metadatas,
-                            );
-
                   # Change the time when the client was active for the last time
                             $client->set_last_active( time() );
 
@@ -115,20 +108,11 @@ sub run_server {
                         my ( $w_io, $revents ) = @_;
                         my $client = $self->get_client_by_id( $w_io->data );
 
-                        #if ($client)
-                        #{
                         #Get message from client buffer and write
                         WebSocketIOManager->new()
                           ->send_buffered_data_to_connection( $client,
                             $w_io->fh, $self->websocket_engine );
-
-                        #}
                     }
-                );
-
-                my $authHelper = WebSocketAuthorizationHelper->new(
-                    clients           => $self->clients,
-                    clients_metadatas => $self->clients_metadatas
                 );
 
                 $authHelper->remember_client( $w_io_read, $w_io_write );
