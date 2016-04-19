@@ -28,3 +28,29 @@ sub DoJob {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+PingReceivedJob - Asynchronous job that is run after receiving ping frame from the client
+
+=head1 SYNOPSIS
+	
+	my $job : shared = shared_clone( PingReceivedJob->new );
+	ThreadWorkers::enqueue_job($job);
+
+=head1 DESCRIPTION
+
+Responds client with pong frame.
+  
+=head2 Methods
+
+=over 12
+
+=item C<DoJob>
+
+Can asynchronously respond client with pong frame.
+
+=back
+
+

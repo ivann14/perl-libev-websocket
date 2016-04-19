@@ -3,9 +3,9 @@ package AbstractWebSocketEngine;
 use strict;
 use warnings;
 
-use WebSocketClient;
 use ReadJob;
 use PingReceivedJob;
+use WebSocketClient;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -83,15 +83,14 @@ sub process_ping_data {
 }
 
 
-sub process_client_disconnected {
+sub process_client_disconnecting {
     my ( $self, $client ) = @_;
 
-    delete $self->clients_metadatas->{ $client->id };
-    $self->clients->Remove( $client->id );
+    WebSocketClientWriter->new->close_client($client);
 }
 
 
-sub pong_received {
+sub process_pong_received {
     my ( $self, $bytes, $client ) = @_;
 
     # Reset pinged time, after pong is received
@@ -118,17 +117,120 @@ sub close_client_or_keep_alive {
 }
 
 
-sub process_client_disconnecting {
-    my ( $self, $client ) = @_;
-
-    WebSocketClientWriter->new->close_client($client);
-}
-
-
-sub process_client_authentication {
+sub authenticate_client {
     my ( $self, $client, $request ) = @_;
 
     return 1;
 }
 
+sub client_connection_is_closed {
+    my ( $self, $client ) = @_;
+
+    delete $self->clients_metadatas->{ $client->id };
+    $self->clients->Remove( $client->id );
+}
+
+
 1;
+__END__
+
+=head1 NAME
+
+AbstractWebSocketEngine - Implementation of cruacial methods for running WebSocketServer
+
+=head1 SYNOPSIS
+
+	use parent 'AbstractWebSocketEngine';
+
+	sub new {
+		my $class = shift;
+		return $class->SUPER::new(@_);
+	}
+
+	sub process_text_data {
+		#Custom code for handling text data from client
+	}
+
+	sub process_client_authentication {
+		#Custom code for handling client authentication
+	}
+
+
+
+=head1 DESCRIPTION
+
+This class serves as an abstraction for creating custom WebSocketServer implementation. All the methods that starts with the name process, can return instances of classes that derives from AbstractJob class and can run asynchronously.
+  
+=head2 Methods
+
+=over 12
+
+=item C<loop>
+
+Contains an instance of currently running LibEV loop.
+
+=item C<client>
+
+Contains instance of ThreadSafeHash with current clients.
+
+=item C<clients_metadatas>
+
+Contains hash with clients metadatas.
+
+=item C<ping_after_seconds_of_inactivity>
+
+Number of seconds after which client will be pinged from server, after his last data sent.
+
+=item C<close_after_no_pong>
+
+Number of seconds after which client will be disconnected from server after not receiving a pong frame from the client.
+
+=item C<process_text_data>
+
+Method for customization, that will be raised after receiving text frame from the client. UTF-8 encoded text and WebSocketClient instance are supplied as parameters.
+Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+ 
+=item C<process_binary_data>
+
+Method for customization, that will be raised after receiving binary frame from the client. Binary data and WebSocketClient instance are supplied as parameters.
+Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+
+=item C<process_pong_data>
+
+Method for customization, that will be raised after receiving pong frame from the client. Data from pong frame and WebSocketClient instance are supplied as parameters.
+Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+Contains default implementation.
+
+=item C<process_ping_data>
+
+Method for customization, that will be raised after receiving ping frame from the client. Data from ping frame and WebSocketClient instance are supplied as parameters.
+Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+Contains default implementation.
+
+=item C<process_client_disconnecting>
+
+Method for customization, that will be raised after receiving close frame from the client. WebSocketClient instance is supplied as parameter.
+Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+Contains default implementation.
+
+=item C<close_client_or_keep_alive>
+
+Method for customization, that will be raised every time when the file handle for client is available for writing and there is nothing to write. Can be used for pinging or closing client.
+Contains default implementation.
+
+=item C<authenticate_client>
+
+Method for customization, that will be raised every time when the client is accepted and whole handshake request is read. 
+Return true, if the client is authenticated and we can start receiving messages from the client.
+Return false, if the client is authenticated. Client will be disconnected from the server.
+Handshake request is supplied as parameter with the client. 
+
+=item C<client_connection_is_closed>
+
+Method for customization, that will be raised everytime the client is disconnected from the server. 
+Contains default implementation.
+
+
+=back
+
+

@@ -47,7 +47,7 @@ sub authorize_client {
             $client->set_resource_name( $handshake->req->{'resource_name'} );
 
             if (
-                $self->engine->process_client_authentication(
+                $self->engine->authenticate_client (
                     $client, $handshake->req
                 )
               )

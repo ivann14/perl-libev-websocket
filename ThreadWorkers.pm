@@ -42,3 +42,34 @@ sub enqueue_job {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+ThreadWorkers - Threads that can run jobs asynchronously
+
+=head1 SYNOPSIS
+	
+	my $job : shared; #Object that derives from AbstractJob
+	ThreadWorkers::init_thread_workers ($number_of_running_threads);
+	ThreadWorkers::enqueue_job ($job);
+
+=head1 DESCRIPTION
+
+Static class which inits number of running threads and ThreadQueue used for storing job instances.
+  
+=head2 Methods
+
+=over 12
+
+=item C<init_thread_workers>
+
+Starts number of threads, supplied as parameter.
+
+=item C<enqueue_job>
+
+Enqueues instance of a job that will be run asynchronously.
+If given object does not implement DoJob method, exception is thrown.
+
+=back
+
