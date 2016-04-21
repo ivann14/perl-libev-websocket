@@ -127,7 +127,7 @@ sub client_connection_is_closed {
     my ( $self, $client ) = @_;
 
     delete $self->clients_metadatas->{ $client->id };
-    $self->clients->Remove( $client->id );
+    $self->clients->remove( $client->id );
 }
 
 
@@ -167,15 +167,15 @@ This class serves as an abstraction for creating custom WebSocketServer implemen
 
 =item C<loop>
 
-Contains an instance of currently running LibEV loop.
+contains an instance of currently running LibEV loop.
 
 =item C<client>
 
-Contains instance of ThreadSafeHash with current clients.
+contains instance of ThreadSafeHash with current clients.
 
 =item C<clients_metadatas>
 
-Contains hash with clients metadatas.
+contains hash with clients metadatas.
 
 =item C<ping_after_seconds_of_inactivity>
 
@@ -199,24 +199,24 @@ Can return instance of class derived from AbstractJob, which DoJob method will b
 
 Method for customization, that will be raised after receiving pong frame from the client. Data from pong frame and WebSocketClient instance are supplied as parameters.
 Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
-Contains default implementation.
+contains default implementation.
 
 =item C<process_ping_data>
 
 Method for customization, that will be raised after receiving ping frame from the client. Data from ping frame and WebSocketClient instance are supplied as parameters.
 Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
-Contains default implementation.
+contains default implementation.
 
 =item C<process_client_disconnecting>
 
 Method for customization, that will be raised after receiving close frame from the client. WebSocketClient instance is supplied as parameter.
 Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
-Contains default implementation.
+contains default implementation.
 
 =item C<close_client_or_keep_alive>
 
 Method for customization, that will be raised every time when the file handle for client is available for writing and there is nothing to write. Can be used for pinging or closing client.
-Contains default implementation.
+contains default implementation.
 
 =item C<authenticate_client>
 
@@ -228,7 +228,7 @@ Handshake request is supplied as parameter with the client.
 =item C<client_connection_is_closed>
 
 Method for customization, that will be raised everytime the client is disconnected from the server. 
-Contains default implementation.
+contains default implementation.
 
 
 =back

@@ -17,25 +17,20 @@ sub new {
     return bless( \%self, $class );
 }
 
-sub thread_lock {
-    my ($self) = @_;
-    return $self->{'lock'};
-}
-
-sub Add {
+sub add {
     my ( $self, $key, $value ) = @_;
-    my $lock = $self->thread_lock;
+    my $lock = $self->{'lock'};
     lock($lock);
-    my $hash = $self->Hash();
+    my $hash = $self->internal_hash();
     $hash->{$key} = $value;
 }
 
-sub Contains {
+sub contains {
     my ( $self, $key ) = @_;
 
-    my $lock = $self->thread_lock;
+    my $lock = $self->{'lock'};
     lock($lock);
-    my $hash = $self->Hash();
+    my $hash = $self->internal_hash();
     if ( exists $hash->{$key} ) {
         return 1;
     }
@@ -43,38 +38,87 @@ sub Contains {
     return 0;
 }
 
-sub Remove {
+sub remove {
     my ( $self, $key ) = @_;
 
-    my $lock = $self->thread_lock;
+    my $lock = $self->{'lock'};
     lock($lock);
-    my $hash = $self->Hash();
+    my $hash = $self->internal_hash();
     delete $hash->{$key};
 }
 
-sub GetValue {
+sub get_value {
     my ( $self, $key ) = @_;
-    my $lock = $self->thread_lock;
+    my $lock = $self->{'lock'};
     lock($lock);
-    return $self->Hash()->{$key};
+    return $self->internal_hash()->{$key};
 }
 
-sub MapAction {
+sub map_action {
     my ( $self, $action ) = @_;
-    my $lock = $self->thread_lock;
+    my $lock = $self->{'lock'};
     lock($lock);
-    my $hash = $self->Hash();
-    keys %{ $hash
-    };   # reset the internal iterator so a prior each() doesn't affect the loop
+    my $hash = $self->internal_hash();
+    keys %{ $hash };   # reset the internal iterator so a prior each() doesn't affect the loop
 
     while ( my ( $k, $v ) = each %{$hash} ) {
         $action->( $k, $v );
     }
 }
 
-sub Hash {
+sub internal_hash {
     my ($self) = @_;
     return $self->{'hash'};
 }
 
 1;
+__END__
+
+=head1 NAME
+
+ThreadSafeinternal_hash - Thread safe hash
+
+=head1 SYNOPSIS
+	
+	my $hash : shared = shared_clone (ThreadSafeinternal_hash ->new );
+	$hash -> add ("key", "some shared value");
+	$hash -> contains ("key");
+	my $value = $hash -> get_value("key");
+	$hash -> remove ("key");
+	$hash -> map_action ( sub {
+		my ( $key, $value ) = @_;
+		$value = "changed value";
+	});
+
+=head1 DESCRIPTION
+
+Hash that can be safely shared between threads.
+  
+=head2 Methods
+
+=over 12
+
+=item C<add>
+
+Adds value with given key to hash.
+
+=item C<remove>
+
+Removes key value pair from the hash.
+
+=item C<get_value>
+
+Returns value for given key.
+
+=item C<map_action>
+
+Runs given subroutine with two parameters (key and value), thread safely for each key value pair in hash.
+
+=item C<internal_hash>
+
+Returns hash internally used by the instance of this class.
+
+=back
+
+
+

@@ -79,7 +79,7 @@ sub remember_client {
         write_watcher => $w_io_write
     );
 
-    $self->clients->Add( $accepted_client->id, $accepted_client );
+    $self->clients->add( $accepted_client->id, $accepted_client );
     $self->clients_metadatas->{ $accepted_client->id } =
       $accepted_client_metadata;
 

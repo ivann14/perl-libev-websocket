@@ -70,7 +70,7 @@ sub send_buffered_data_to_connection {
 
         if ( $msg_to_send->is_close ) {
             $fh->close();
-            $engine->process_client_disconnected($client);
+            $engine->client_connection_is_closed ($client);
         }
 
         if ( $msg_to_send->is_ping ) {

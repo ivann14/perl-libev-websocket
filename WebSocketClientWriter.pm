@@ -25,7 +25,7 @@ sub write_to_all_clients {
     $clients = $clients || $self->{clients};
     my $frame = Protocol::WebSocket::Frame->new($text);
 
-    $clients->MapAction(
+    $clients->map_action(
         sub {
             my ( $id, $client ) = @_;
             $self->send_frame_to_client( $id, $frame );
@@ -37,7 +37,7 @@ sub send_frame_to_client {
     my ( $self, $client_id, $frame ) = @_;
 
     my $clients = $self->{clients};
-    my $client  = $clients->GetValue($client_id);
+    my $client  = $clients->get_value($client_id);
     $self->enqueue_frame_for_client ( $client, $frame );
 }
 

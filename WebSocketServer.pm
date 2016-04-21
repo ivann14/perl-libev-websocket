@@ -9,7 +9,7 @@ use threads::shared;
 use EV;
 use Protocol::WebSocket;
 use WebSocketClient;
-use WebSocketEngine;
+use AbstractWebSocketEngine;
 use WebSocketIOManager;
 use WebSocketAuthorizationHelper;
 use ThreadSafeHash;
@@ -52,7 +52,7 @@ sub clients_metadatas {
 
 sub get_client_by_id {
     my ( $self, $client_id ) = @_;
-    return $self->clients->GetValue($client_id);
+    return $self->clients->get_value($client_id);
 }
 
 sub run_server {

@@ -4,7 +4,7 @@ use warnings;
 use lib '..';
 
 use WebSocketServer;
-use AbstractWebSocketEngine;
+use WebSocketEngine;
 use IO::Socket;
 
 my $port = 2222;
