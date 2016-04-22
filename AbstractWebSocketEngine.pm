@@ -97,6 +97,14 @@ sub process_pong_received {
 }
 
 
+sub process_client_connection_is_closed {
+    my ( $self, $client ) = @_;
+
+    delete $self->clients_metadatas->{ $client->id };
+    $self->clients->remove( $client->id );
+}
+
+
 sub close_client_or_keep_alive {
     my ( $self, $currentClient ) = @_;
     if ( $currentClient->pinged
@@ -122,14 +130,6 @@ sub authenticate_client {
     return 1;
 }
 
-sub client_connection_is_closed {
-    my ( $self, $client ) = @_;
-
-    delete $self->clients_metadatas->{ $client->id };
-    $self->clients->remove( $client->id );
-}
-
-
 1;
 __END__
 
@@ -150,7 +150,7 @@ AbstractWebSocketEngine - Implementation of cruacial methods for running WebSock
 		#Custom code for handling text data from client
 	}
 
-	sub process_client_authentication {
+	sub authenticate_client {
 		#Custom code for handling client authentication
 	}
 
@@ -202,19 +202,19 @@ Can return instance of class derived from AbstractJob, which DoJob method will b
 
 Method for customization, that will be raised after receiving pong frame from the client. Data from pong frame and WebSocketClient instance are supplied as parameters.
 Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
-contains default implementation.
+Contains default implementation.
 
 =item C<process_ping_data>
 
 Method for customization, that will be raised after receiving ping frame from the client. Data from ping frame and WebSocketClient instance are supplied as parameters.
 Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
-contains default implementation.
+Contains default implementation.
 
 =item C<process_client_disconnecting>
 
 Method for customization, that will be raised after receiving close frame from the client. WebSocketClient instance is supplied as parameter.
 Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
-contains default implementation.
+Contains default implementation.
 
 =item C<close_client_or_keep_alive>
 
@@ -228,10 +228,11 @@ Return true, if the client is authenticated and we can start receiving messages 
 Return false, if the client is authenticated. Client will be disconnected from the server.
 Handshake request is supplied as parameter with the client. 
 
-=item C<client_connection_is_closed>
+=item C<process_client_connection_is_closed>
 
 Method for customization, that will be raised everytime the client is disconnected from the server. 
-contains default implementation.
+Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+Contains default implementation.
 
 
 =back

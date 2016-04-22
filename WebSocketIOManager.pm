@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use threads;
 use threads::shared;
-use UNIVERSAL::can;
 use AbstractWebSocketEngine;
 
 use Protocol::WebSocket;
@@ -54,9 +53,7 @@ sub process_websocket_data {
         elsif ( $frame->is_close ) {
             $job = $engine->process_client_disconnecting($client);
         }
-        if ( UNIVERSAL::can( $job, 'can' ) && $job->can('DoJob') ) {
             ThreadWorkers::enqueue_job($job);
-        }
     }
 }
 
@@ -70,7 +67,9 @@ sub send_buffered_data_to_socket {
 
         if ( $msg_to_send->is_close ) {
             $fh->close();
-            $engine->client_connection_is_closed ($client);
+		my $job : shared = shared_clone ({ }); 
+            $job = $engine->process_client_connection_is_closed ($client);
+		ThreadWorkers::enqueue_job ($job);
         }
 
         if ( $msg_to_send->is_ping ) {

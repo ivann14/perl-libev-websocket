@@ -5,6 +5,7 @@ use warnings;
 
 use threads;
 use threads::shared;
+use UNIVERSAL::can;
 
 use Thread::Queue;
 
@@ -33,12 +34,16 @@ sub init_thread_workers {
 
 sub enqueue_job {
     my ($job) = @_;
+
+    if ( UNIVERSAL::can( $job, 'can' ) && $job->can('DoJob') ) {
+
     if ($process_async) {
         $jobQueue->enqueue($job);
     }
     else {
         $job->DoJob();
     }
+}
 }
 
 1;
