@@ -11,12 +11,11 @@ sub new {
     my ( $class, %args ) = @_;
 
     my $self = bless {
-        clients           => $args{clients},
-        clients_metadatas => $args{clients_metadatas},
         ping_after_seconds_of_inactivity =>
           $args{ping_after_seconds_of_inactivity} || 150,
         close_after_no_pong => $args{close_after_no_pong} || 150
     }, $class;
+
     return $self;
 }
 
@@ -165,17 +164,21 @@ This class serves as an abstraction for creating custom WebSocketServer implemen
 
 =over 12
 
+=item C<new>
+
+Constructor. You can 
+
 =item C<loop>
 
-contains an instance of currently running LibEV loop.
+Contains an instance of currently running LibEV loop.
 
 =item C<client>
 
-contains instance of ThreadSafeHash with current clients.
+Contains instance of ThreadSafeHash with current clients.
 
 =item C<clients_metadatas>
 
-contains hash with clients metadatas.
+Contains hash with clients metadatas.
 
 =item C<ping_after_seconds_of_inactivity>
 

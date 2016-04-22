@@ -98,6 +98,11 @@ Hash that can be safely shared between threads.
 
 =over 12
 
+=item C<new>
+
+Constructor.
+
+
 =item C<add>
 
 Adds value with given key to hash.

@@ -5,7 +5,6 @@ use warnings;
 use threads;
 use threads::shared;
 use UNIVERSAL::can;
-use Thread::Queue;
 use AbstractWebSocketEngine;
 
 use Protocol::WebSocket;
@@ -16,11 +15,12 @@ sub new {
     return bless {}, $class;
 }
 
-sub read_from_fh {
-    my ( $self, $file_handle ) = @_;
-
+sub read_from_socket {
+    my ( $self, $file_handle, $size ) = @_;
+	
+	$size = $size || 1024;
     my $buffer;
-    sysread( $file_handle, $buffer, 1024 );
+    sysread( $file_handle, $buffer, $size );
 
     return $buffer;
 }
@@ -60,9 +60,9 @@ sub process_websocket_data {
     }
 }
 
-sub send_buffered_data_to_connection {
+sub send_buffered_data_to_socket {
     my ( $self, $client, $fh, $engine ) = @_;
-    my $buf         = $client->writeBuffer;
+    my $buf         = $client->write_buffer;
     my $msg_to_send = $buf->dequeue_nb();
 
     if ($msg_to_send) {
@@ -83,3 +83,38 @@ sub send_buffered_data_to_connection {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+WebSocketIOManager - Manages work with the socket
+
+=head1 SYNOPSIS
+	
+	my $io_manager = WebSocketIOManager->new;
+	my $data = $io_manager->read_from_socket ( $socket, $size_to_read );
+	$io_manager->process_websocket_data( $engine, $data, $client );	
+	$io_manager-> send_buffered_data_to_socket( $weboscket_client, $socket, $abstract_websocket_engine );
+
+=head1 DESCRIPTION
+
+This class used for manipulating with the client's socket.
+Reading from the socket or writing to it.
+  
+=head2 Methods
+
+=over 12
+
+=item C<read_from_socket>
+
+Returns data read from supplied socket.
+
+=item C<process_websocket_data>
+
+Takes instance that derives from AbstractWebSocketEngine, client which has sent the data and sent data as parameters. Then recognize sent data and calls AbstractWebSocketEngine's appropriate method.
+
+=item C<send_buffered_data_to_connection>
+
+Takes instance that derives from AbstractWebSocketEngine, client to whom data from his buffer will be sent and client's socket. Then recognize data to be sent and calls AbstractWebSocketEngine's appropriate method.
+
+=back

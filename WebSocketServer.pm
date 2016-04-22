@@ -17,14 +17,13 @@ use ThreadWorkers;
 
 sub new {
     my ( $class, %args ) = @_;
-
-    my %hash;
+	
     my $self = bless {
         socket                   => $args{socket},
         websocket_engine         => $args{websocket_engine},
-        clients                  => shared_clone( ThreadSafeHash->new() ),
-        clients_metadatas        => {},
-        number_of_thread_workers => 0,
+        clients                  => $args{clients} || shared_clone( ThreadSafeHash->new() ),
+        clients_metadatas        => $args{clients_metadatas} || {},
+        number_of_thread_workers => $args{number_of_thread_workers} || 0,
         loop                     => $args{loop} || EV::default_loop,
     }, $class;
 
@@ -80,7 +79,7 @@ sub run_server {
                         my $client = $self->get_client_by_id( $w_io->data );
 
                         my $io_manager = WebSocketIOManager->new();
-                        my $buffer     = $io_manager->read_from_fh( $w_io->fh );
+                        my $buffer     = $io_manager->read_from_socket( $w_io->fh );
 
                         if ($buffer) {
                   # Change the time when the client was active for the last time
@@ -110,7 +109,7 @@ sub run_server {
 
                         #Get message from client buffer and write
                         WebSocketIOManager->new()
-                          ->send_buffered_data_to_connection( $client,
+                          ->send_buffered_data_to_socket( $client,
                             $w_io->fh, $self->websocket_engine );
                     }
                 );

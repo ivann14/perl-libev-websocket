@@ -13,8 +13,8 @@ sub new {
 
     my %self : shared;
 
-    $self{client}  = $args{client};
-    $self{data}    = $args{data};
+    $self{client}  = $args{client} || die "Supply WebSocketClient.";
+    $self{data}    = $args{data} || die "Supply data to be sent.";
 
     bless( \%self, $class );
 
@@ -23,7 +23,7 @@ sub new {
 
 sub DoJob {
     my ($self) = @_;
-    WebSocketClientWriter->new->write_to_client( $self->{client}->id,
+    WebSocketClientWriter->new->send_text_to_client( $self->{client},
         $self->{data} );
 }
 
@@ -46,6 +46,10 @@ Responds client with pong frame.
 =head2 Methods
 
 =over 12
+
+=item C<new>
+
+Constructor. Supply client to which pong will be sent and data that will be sent in pong frame.
 
 =item C<DoJob>
 

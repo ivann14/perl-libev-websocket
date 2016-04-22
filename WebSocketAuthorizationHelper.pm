@@ -6,13 +6,12 @@ use Protocol::WebSocket;
 use WebSocketClientMetadata;
 use WebSocketClientWriter;
 
+
 sub new {
     my ( $class, %args ) = @_;
 
     my $self = bless {
-        engine            => $args{engine},
-        clients           => $args{client}            || $args{engine}->clients,
-        clients_metadatas => $args{clients_metadatas} || $args{engine}->clients_metadatas
+        engine            => $args{engine} || die "Supply instance of class that derives from AbstractWebSocketEngine.",
     }, $class;
 
     return $self;
@@ -23,20 +22,10 @@ sub engine {
     return $self->{engine};
 }
 
-sub clients {
-    my ($self) = @_;
-    return $self->{clients};
-}
-
-sub clients_metadatas {
-    my ($self) = @_;
-    return $self->{clients_metadatas};
-}
-
 sub authorize_client {
     my ( $self, $client, $buffer ) = @_;
 
-    my $handshake = $self->clients_metadatas->{ $client->id }->handshake;
+    my $handshake = $self->engine->clients_metadatas->{ $client->id }->handshake;
     if ( !$handshake->is_done ) {
         $handshake->parse($buffer);
 
@@ -53,13 +42,11 @@ sub authorize_client {
               )
             {
 
-                WebSocketClientWriter->new( clients => $self->clients )
-                  ->write_to_client( $client->id, $handshake->to_string );
-                $self->clients_metadatas->{ $client->id }->write_watcher->start;
+                WebSocketClientWriter->new->send_text_to_client( $client, $handshake->to_string );
+                $self->engine->clients_metadatas->{ $client->id }->write_watcher->start;
             }
             else {
-                WebSocketClientWriter->new( clients => $self->clients )
-                  ->close_client( $client->id, 1008 );
+                WebSocketClientWriter->new->close_client( $client, 1008 );
             }
         }
     }
@@ -79,8 +66,8 @@ sub remember_client {
         write_watcher => $w_io_write
     );
 
-    $self->clients->add( $accepted_client->id, $accepted_client );
-    $self->clients_metadatas->{ $accepted_client->id } =
+    $self->engine->clients->add( $accepted_client->id, $accepted_client );
+    $self->engine->clients_metadatas->{ $accepted_client->id } =
       $accepted_client_metadata;
 
     $w_io_read->start;
@@ -89,7 +76,7 @@ sub remember_client {
 sub is_handshake_finished {
     my ( $self, $client ) = @_;
 
-    my $metadata = $self->clients_metadatas->{ $client->id };
+    my $metadata = $self->engine->clients_metadatas->{ $client->id };
 
     if ( $metadata && $metadata->handshake->is_done ) {
         return 1;
@@ -99,3 +86,44 @@ sub is_handshake_finished {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+WebSocketAuthorizationHelper - Authorization helper
+
+=head1 SYNOPSIS
+	my $helper = WebSocketAuthorizationHelper->new ($AbstractWebSocketEngine_instance);
+	$helper->remember_client ($watcher_read, $watcher_write);
+	$helper->is_handshake_finished ($client);
+	$helper->authorize_client ($websocket_client, $data_read_from_socket);
+
+=head1 DESCRIPTION
+
+This class serves for authorization incoming clients and saving them in thread safe collection.
+  
+=head2 Methods
+
+=over 12
+
+=item C<new>
+
+Constructor. Supply instance of the class that derives from AbstractWebSocketEngine, so the incoming clients can be safed in thread safe collection and customization of authentication process via supplied instance.
+
+=item C<remember_client>
+
+Takes read and write watcher of accepted client's filehandle.
+Creates from them instance of WebSocketClientMetadata and WebSocketClient saves them inside supplied AbstractWebSocketEngine instance. So the event loop can listen for the incoming handshake. 
+
+=item C<is_handshake_finished>
+
+Returns true, if the handshake is finnished (the whole WebSocket request arrived) for given client.
+
+=item C<authorize_client>
+
+For given client and data from file handle, tries to create the whole websocket request and if it is ok response is send. The whole request may not be read if the tcp socket is non blocking. Thats why read parts are saved until the whole request is constructed. After the whole request is read, then customized authentication method from AbstractWebSocket instance is called.
+
+
+=back
+
+

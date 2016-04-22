@@ -8,51 +8,58 @@ use Protocol::WebSocket;
 sub new {
     my ( $class, %args ) = @_;
 
-    my $self = bless { clients => $args{clients} }, $class;
+    my $self = bless { }, $class;
 
     return $self;
 }
 
-sub write_to_client {
-    my ( $self, $client_id, $text ) = @_;
+sub send_text_to_client {
+    my ( $self, $client, $text ) = @_;
+
     my $frame = Protocol::WebSocket::Frame->new($text);
-    $self->send_frame_to_client( $client_id, $frame );
+    $self->enqueue_frame_for_client ( $client, $frame );
 }
 
-sub write_to_all_clients {
+sub send_text_to_clients {
     my ( $self, $text, $clients ) = @_;
 
-    $clients = $clients || $self->{clients};
+		unless (defined $clients) {
+		die "ThreadSafeHash with WebSocketClients was not supplied."
+	}
+
+
     my $frame = Protocol::WebSocket::Frame->new($text);
 
     $clients->map_action(
         sub {
             my ( $id, $client ) = @_;
-            $self->send_frame_to_client( $id, $frame );
+		 $client->write_buffer->enqueue($frame);
         }
     );
 }
 
-sub send_frame_to_client {
-    my ( $self, $client_id, $frame ) = @_;
-
-    my $clients = $self->{clients};
-    my $client  = $clients->get_value($client_id);
-    $self->enqueue_frame_for_client ( $client, $frame );
-}
-
 sub enqueue_frame_for_client {
     my ( $self, $client, $frame ) = @_;
-    $client->writeBuffer->enqueue($frame);
+
+	unless (defined $client) {
+		die "WebSocketClient was not supplied."
+	}
+
+    $client->write_buffer->enqueue($frame);
 }
 
 sub ping_client {
     my ( $self, $client ) = @_;
 
-    my $frameToSend = Protocol::WebSocket::Frame->new( type => 'ping' );
-    $frameToSend->append('ping');
+		unless (defined $client) {
+		die "WebSocketClient was not supplied."
+	}
 
-    $client->writeBuffer->insert( 0, $frameToSend );
+
+    my $frame_to_send = Protocol::WebSocket::Frame->new( type => 'ping' );
+    $frame_to_send->append('ping');
+
+    $client->write_buffer->insert( 0, $frame_to_send );
 }
 
 sub close_client {

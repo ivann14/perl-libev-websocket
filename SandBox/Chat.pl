@@ -23,7 +23,7 @@ my $socket = IO::Socket::INET->new(
 my $server = WebSocketServer->new(
     socket                           => $socket,
     websocket_engine                 => WebSocketEngine->new(),
-    number_of_thread_workers         => 2,
+    number_of_thread_workers         => 0,
     close_after_no_pong              => 20,
     ping_after_seconds_of_inactivity => 20,
 );

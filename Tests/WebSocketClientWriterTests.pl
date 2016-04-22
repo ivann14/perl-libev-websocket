@@ -25,7 +25,7 @@ ok(
     'and it is the WebSocketClientWriter class'
 );
 
-ok( $writer->write_to_client( 5, "test message" ), 'writing to client' );
+ok( $writer->send_text_to_client( 5, "test message" ), 'writing to client' );
 
 my $frame;
 ok( $frame = $client->writeBuffer->dequeue(), 'checking client buffer' );
@@ -43,7 +43,7 @@ ok(
     'add another client to thread safe hash'
 );
 
-ok( $writer->write_to_all_clients("test message"), 'writing to all clients' );
+ok( $writer->send_text_to_clients("test message"), 'writing to all clients' );
 
 ok( $frame = $client->writeBuffer->dequeue(), 'checking client buffer' );
 ok( defined $frame, 'buffer contains data' );

@@ -36,8 +36,7 @@ sub data {
 
 sub DoJob {
     my ($self) = @_;
-    my $writer = WebSocketClientWriter->new( clients => $self->{clients} );
-    $writer->write_to_all_clients( $self->{data} );
+    my $writer = WebSocketClientWriter->new->send_text_to_clients( $self->{data}, $self->{clients} );
 }
 
 1;
