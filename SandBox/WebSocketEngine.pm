@@ -1,3 +1,4 @@
+
 package WebSocketEngine;
 
 use strict;
@@ -18,6 +19,17 @@ sub process_text_data {
     my ( $self, $text, $client ) = @_;
     my $job = ReadJob->new( data => $text, clients => $self->clients );
     return $job;
+}
+
+
+sub authenticate_client {
+    my ( $self, $client, $request ) = @_;
+	my $value = $request->get_cookie_value("login");
+	if ($key == "true") {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 1;

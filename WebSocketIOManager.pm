@@ -5,7 +5,6 @@ use warnings;
 use threads;
 use threads::shared;
 use AbstractWebSocketEngine;
-
 use Protocol::WebSocket;
 
 sub new {

@@ -76,7 +76,7 @@ __END__
 
 =head1 NAME
 
-ThreadSafeinternal_hash - Thread safe hash
+ThreadSafeHash - Thread safe hash
 
 =head1 SYNOPSIS
 	
@@ -101,7 +101,6 @@ Hash that can be safely shared between threads.
 =item C<new>
 
 Constructor.
-
 
 =item C<add>
 

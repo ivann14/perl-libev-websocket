@@ -6,7 +6,6 @@ use warnings;
 use threads;
 use threads::shared;
 use UNIVERSAL::can;
-
 use Thread::Queue;
 
 my $jobQueue : shared;

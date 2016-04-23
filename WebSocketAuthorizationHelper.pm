@@ -5,6 +5,7 @@ use Protocol::WebSocket;
 
 use WebSocketClientMetadata;
 use WebSocketClientWriter;
+use WebSocketRequest;
 
 
 sub new {
@@ -30,24 +31,27 @@ sub authorize_client {
         $handshake->parse($buffer);
 
         if ( $handshake->error ) {
-            WebSocketClientWriter->new->close_client( $client, 1002 );
+		#Handshake is corrupted fail the connection immediately
+            $self->engine->process_client_connection_is_closed;
         }
         if ( $handshake->is_done ) {
-            $client->set_resource_name( $handshake->req->{'resource_name'} );
+		my $request = WebSocketRequest->new ($handshake->req);
+            $client->set_resource_name( $request->resource_name );
+		my $authenticated = $self->engine->authenticate_client ( $client, $request );
+            
+ 		#If not authenticated set response status to 401, client will fail connection because status was not 101
+		if (!$authenticated) {
+print "failed \n";
+			$handshake->res->{'status'} = "401";
+		}
+	    my $writer = WebSocketClientWriter->new;
+	    $writer->send_text_to_client( $client, $handshake->to_string );
+	    $self->engine->clients_metadatas->{ $client->id }->write_watcher->start;
 
-            if (
-                $self->engine->authenticate_client (
-                    $client, $handshake->req
-                )
-              )
-            {
-
-                WebSocketClientWriter->new->send_text_to_client( $client, $handshake->to_string );
-                $self->engine->clients_metadatas->{ $client->id }->write_watcher->start;
-            }
-            else {
-                WebSocketClientWriter->new->close_client( $client, 1008 );
-            }
+		#Close connection if not authenticated, because client will fail the connection because of 401 status code
+	    if (!$authenticated) {
+		$writer->close_client( $client );
+	    }
         }
     }
 }
