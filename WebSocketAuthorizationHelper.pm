@@ -107,7 +107,7 @@ WebSocketAuthorizationHelper - Authorization helper
 
 =head1 DESCRIPTION
 
-This class serves for authorization incoming clients and saving them in thread safe collection.
+This class serves for authorization of incoming clients and storing them in thread safe collection.
   
 =head2 Methods
 
@@ -115,12 +115,12 @@ This class serves for authorization incoming clients and saving them in thread s
 
 =item C<new>
 
-Constructor. Supply instance of the class that derives from AbstractWebSocketEngine, so the incoming clients can be safed in thread safe collection and customization of authentication process via supplied instance.
+Constructor. Supply instance of the class that derives from AbstractWebSocketEngine, so the incoming clients can be stored in thread safe collection and customization of authentication process via supplied instance.
 
 =item C<remember_client>
 
-Takes read and write watcher of accepted client's filehandle.
-Creates from them instance of WebSocketClientMetadata and WebSocketClient saves them inside supplied AbstractWebSocketEngine instance. So the event loop can listen for the incoming handshake. 
+Takes read and write watcher of accepted client's filehandle as parameters.
+Creates WebSocketClientMetadata and WebSocketClient stores them inside supplied AbstractWebSocketEngine instance. So the event loop can listen for the incoming handshake. 
 
 =item C<is_handshake_finished>
 
@@ -128,8 +128,7 @@ Returns true, if the handshake is finnished (the whole WebSocket request arrived
 
 =item C<authorize_client>
 
-For given client and data from file handle, tries to create the whole websocket request and if it is ok response is send. The whole request may not be read if the tcp socket is non blocking. Thats why read parts are saved until the whole request is constructed. After the whole request is read, then customized authentication method from AbstractWebSocket instance is called.
-
+For given client and data from file handle, tries to create the whole websocket request and if it is ok, then the response is send. The whole request may not be read if the tcp socket is non blocking. Because of that chunks of the request are stored until the whole request is constructed. After the whole request is read, then customized authentication method from AbstractWebSocket instance is called.
 
 =back
 

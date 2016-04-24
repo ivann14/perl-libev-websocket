@@ -53,7 +53,7 @@ Constructor. Supply client to which pong will be sent and data that will be sent
 
 =item C<DoJob>
 
-Can asynchronously respond client with pong frame.
+Can asynchronously respond to client with pong frame.
 
 =back
 

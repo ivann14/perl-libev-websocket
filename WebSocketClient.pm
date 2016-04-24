@@ -91,7 +91,7 @@ __END__
 
 =head1 NAME
 
-WebSocketClient - WebSocket client (represents tcp connection)
+WebSocketClient - WebSocket client
 
 =head1 SYNOPSIS
 	
@@ -99,10 +99,7 @@ WebSocketClient - WebSocket client (represents tcp connection)
     
 =head1 DESCRIPTION
 
-This class is representation of the connected websocket client. Contains all the data about client
-that can be shared between threads. WebSocket client has write buffer to enqueue messages which
-will be sent to client, if the client's socket is writeable.
-This class is thread safe.
+This class is the representation of the connected websocket client. Contains all the data about client that can be shared between threads. WebSocket client has write buffer to enqueue messages. These messages will be sent to client, if the client's socket is writeable. This class is thread safe.
   
 =head2 Methods
 
@@ -110,15 +107,15 @@ This class is thread safe.
 
 =item C<id>
 
-Returns client identifier. String representationof guid is used by default.
+Returns client identifier. String representation of guid is used by default.
 
 =item C<resource_name>
 
-TODO resource
+Returns resource name.
 
 =item C<set_resource_name>
 
-Setsres...
+Sets resource name.
 
 =item C<pinged>
 
@@ -147,7 +144,7 @@ Set true, if connection to client will be closed and no other frames should be r
 
 =item C<write_buffer>
 
-Returns Thread::Queue instance that is used as a buffer for WebSocket frames that will be sent to the client.
+Returns Thread::Queue instance that is used as a buffer for WebSocket frames.
 
 =item C<empty_write_buffer>
 

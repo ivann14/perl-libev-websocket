@@ -60,7 +60,7 @@ ThreadWorkers - Threads that can run jobs asynchronously
 
 =head1 DESCRIPTION
 
-Static class which inits number of running threads and ThreadQueue used for storing job instances.
+Static class which initializes number of running threads and ThreadQueue used for storing job instances.
   
 =head2 Methods
 

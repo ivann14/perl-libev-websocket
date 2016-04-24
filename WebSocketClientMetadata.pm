@@ -49,7 +49,7 @@ WebSocketClientMetadata - WebSocket client metadata
 
 =head1 DESCRIPTION
 
-This class represents all the data about websocket client that can not be shared between threads. 
+This class represents all data about websocket client that can not be shared between threads. 
   
 =head2 Methods
 

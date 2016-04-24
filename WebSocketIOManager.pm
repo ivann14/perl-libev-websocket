@@ -96,8 +96,7 @@ WebSocketIOManager - Manages work with the socket
 
 =head1 DESCRIPTION
 
-This class used for manipulating with the client's socket.
-Reading from the socket or writing to it.
+This class is used for managing (reading/writing) the client's socket.
   
 =head2 Methods
 
@@ -109,10 +108,10 @@ Returns data read from supplied socket.
 
 =item C<process_websocket_data>
 
-Takes instance that derives from AbstractWebSocketEngine, client which has sent the data and sent data as parameters. Then recognize sent data and calls AbstractWebSocketEngine's appropriate method.
+Takes 3 parameters. Instance that derives from AbstractWebSocketEngine, websocket client and read data from the socket. Then recognizes sent data and calls AbstractWebSocketEngine's appropriate method.
 
 =item C<send_buffered_data_to_connection>
 
-Takes instance that derives from AbstractWebSocketEngine, client to whom data from his buffer will be sent and client's socket. Then recognize data to be sent and calls AbstractWebSocketEngine's appropriate method.
+Takes 3 parameters. Instance that derives from AbstractWebSocketEngine, client to whom data from his buffer will be sent and client's socket. 
 
 =back

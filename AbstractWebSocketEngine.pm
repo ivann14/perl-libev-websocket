@@ -158,7 +158,7 @@ AbstractWebSocketEngine - Implementation of cruacial methods for running WebSock
 
 =head1 DESCRIPTION
 
-This class serves as an abstraction for creating custom WebSocketServer implementation. All the methods that starts with the name process, can return instances of classes that derives from AbstractJob class and can run asynchronously.
+This class serves as an abstraction for creating custom WebSocketServer implementation. All methods that start with the name process, can return instances of classes that derive from AbstractJob class and can run asynchronously.
   
 =head2 Methods
 
@@ -170,7 +170,7 @@ Constructor. You can
 
 =item C<loop>
 
-Contains an instance of currently running LibEV loop.
+Contains instance of currently running LibEV loop.
 
 =item C<client>
 
@@ -182,7 +182,7 @@ Contains hash with clients metadatas.
 
 =item C<ping_after_seconds_of_inactivity>
 
-Number of seconds after which client will be pinged from server, after his last data sent.
+Number of seconds after which inactive client will be pinged from serve.
 
 =item C<close_after_no_pong>
 
@@ -191,23 +191,24 @@ Number of seconds after which client will be disconnected from server after not 
 =item C<process_text_data>
 
 Method for customization, that will be raised after receiving text frame from the client. UTF-8 encoded text and WebSocketClient instance are supplied as parameters.
-Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+Can return instance of class derived from AbstractJob.
  
 =item C<process_binary_data>
 
 Method for customization, that will be raised after receiving binary frame from the client. Binary data and WebSocketClient instance are supplied as parameters.
-Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+Can return instance of class derived from AbstractJob.
+
 
 =item C<process_pong_data>
 
 Method for customization, that will be raised after receiving pong frame from the client. Data from pong frame and WebSocketClient instance are supplied as parameters.
-Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+Can return instance of class derived from AbstractJob.
 Contains default implementation.
 
 =item C<process_ping_data>
 
 Method for customization, that will be raised after receiving ping frame from the client. Data from ping frame and WebSocketClient instance are supplied as parameters.
-Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+Can return instance of class derived from AbstractJob.
 Contains default implementation.
 
 =item C<process_client_disconnecting>
@@ -218,20 +219,20 @@ Contains default implementation.
 
 =item C<close_client_or_keep_alive>
 
-Method for customization, that will be raised every time when the file handle for client is available for writing and there is nothing to write. Can be used for pinging or closing client.
+Method for customization, that will be raised every time the file handle for client is available for writing and there is nothing to write. Can be used for pinging or closing client.
 contains default implementation.
 
 =item C<authenticate_client>
 
-Method for customization, that will be raised every time when the client is accepted and whole handshake request is read. 
+Method for customization, that will be raised every time the client is accepted and whole handshake request is read. 
 Return true, if the client is authenticated and we can start receiving messages from the client.
 Return false, if the client is authenticated. Client will be disconnected from the server.
-Handshake request is supplied as parameter with the client. 
+Takes 2 parameters. Handshake request and websocket client. 
 
 =item C<process_client_connection_is_closed>
 
 Method for customization, that will be raised everytime the client is disconnected from the server. 
-Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
+Can return instance of class derived from AbstractJob.
 Contains default implementation.
 
 
