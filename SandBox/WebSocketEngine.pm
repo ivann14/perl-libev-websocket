@@ -25,10 +25,14 @@ sub process_text_data {
 sub authenticate_client {
     my ( $self, $client, $request ) = @_;
 	my $value = $request->get_cookie_value("login");
-	if ($key == "true") {
-		return 1;
-	} else {
+	
+	# If cookie contains key login with value false, then do not authenticate
+	if (defined $value && $value eq "false") {
+		print "Authentication failed. \n";
 		return 0;
+	} else {
+		print "Authentication accepted. \n";
+		return 1;
 	}
 }
 

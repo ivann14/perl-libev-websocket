@@ -30,27 +30,31 @@ sub authorize_client {
     if ( !$handshake->is_done ) {
         $handshake->parse($buffer);
 
-        if ( $handshake->error ) {
-		#Handshake is corrupted fail the connection immediately
-            $self->engine->process_client_connection_is_closed ($client);
-        }
         if ( $handshake->is_done ) {
-		my $request = WebSocketRequest->new ($handshake->req);
+            my $request = WebSocketRequest->new ($handshake->req);
             $client->set_resource_name( $request->resource_name );
-		my $authenticated = $self->engine->authenticate_client ( $client, $request );
+		
+            my $authenticated = 1;
+			if ( $handshake->error ) {
+                # If handshake does not fullfill RFC respond with 400 and close connection
+            	$handshake->res->{'status'} = "400";
+        	}else{
+                $authenticated = $self->engine->authenticate_client ( $client, $request );
             
- 		#If not authenticated set response status to 401, client will fail connection because status was not 101
-		if (!$authenticated) {
-			$handshake->res->{'status'} = "401";
-		}
-	    my $writer = WebSocketClientWriter->new;
-	    $writer->send_text_to_client( $client, $handshake->to_string );
-	    $self->engine->clients_metadatas->{ $client->id }->write_watcher->start;
+                #If not authenticated set response status to 401, client will fail connection because status was not 101
+                if (!$authenticated) {
+                    $handshake->res->{'status'} = "401";
+                }
+            }
+	
+            my $writer = WebSocketClientWriter->new;
+            $writer->send_text_to_client( $client, $handshake->to_string );
+            $self->engine->clients_metadatas->{ $client->id }->write_watcher->start;
 
-		#Close connection if not authenticated, because client will fail the connection because of 401 status code
-	    if (!$authenticated) {
-		$self->engine->process_client_connection_is_closed ($client);
-	    }
+            #Close connection if not authenticated or bad handshake, client will end the connection because of 401 status code or 400
+            if (!$authenticated || 	$handshake->error ) {
+                $writer->close_client ($client);
+            }
         }
     }
 }
