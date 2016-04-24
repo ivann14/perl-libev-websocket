@@ -72,7 +72,10 @@ sub process_binary_data {
 sub process_pong_data {
     my ( $self, $data, $client ) = @_;
 
-    $client->set_pinged("");
+	if ($data eq "ping"){
+    		# Reset pinged time, after pong is received
+    		$client->set_pinged( undef );
+	}
 }
 
 sub process_ping_data {
@@ -89,14 +92,6 @@ sub process_client_disconnecting {
 }
 
 
-sub process_pong_received {
-    my ( $self, $bytes, $client ) = @_;
-
-    # Reset pinged time, after pong is received
-    $client->set_pinged("");
-}
-
-
 sub process_client_connection_is_closed {
     my ( $self, $client ) = @_;
 
@@ -107,7 +102,7 @@ sub process_client_connection_is_closed {
 
 sub close_client_or_keep_alive {
     my ( $self, $currentClient ) = @_;
-    if ( $currentClient->pinged
+    if ( defined $currentClient->pinged
         && ( $currentClient->pinged + $self->close_after_no_pong ) < time() )
     {
         WebSocketClientWriter->new->close_client($currentClient);

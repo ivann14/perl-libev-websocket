@@ -1,4 +1,4 @@
-package ReadJob;
+package PongJob;
 
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ use WebSocketClientWriter;
 sub new {
     my ( $class, %args ) = @_;
     my %self : shared;
-    $self{clients} = $args{clients};
+    $self{client} = $args{client};
     $self{data}    = $args{data};
 
     bless( \%self, $class );
@@ -20,10 +20,9 @@ sub new {
     return ( \%self );
 }
 
-
 sub DoJob {
     my ($self) = @_;
-    my $writer = WebSocketClientWriter->new->send_text_to_clients( $self->{data}, $self->{clients} );
+    WebSocketClientWriter->new->send_text_to_client( $self->{data}, $self->{client} );
 }
 
 1;

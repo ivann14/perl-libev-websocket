@@ -7,7 +7,6 @@ use WebSocketClientMetadata;
 use WebSocketClientWriter;
 use WebSocketRequest;
 
-
 sub new {
     my ( $class, %args ) = @_;
 
@@ -35,24 +34,28 @@ sub authorize_client {
             $client->set_resource_name( $request->resource_name );
 		
             my $authenticated = 1;
+            my $status_code = 101;
 			if ( $handshake->error ) {
                 # If handshake does not fullfill RFC respond with 400 and close connection
-            	$handshake->res->{'status'} = "400";
+            	$status_code = 400;
         	}else{
                 $authenticated = $self->engine->authenticate_client ( $client, $request );
             
                 #If not authenticated set response status to 401, client will fail connection because status was not 101
                 if (!$authenticated) {
-                    $handshake->res->{'status'} = "401";
+                    $status_code = 401;
                 }
             }
 	
-            my $writer = WebSocketClientWriter->new;
-            $writer->send_text_to_client( $client, $handshake->to_string );
+
+		my $response = $handshake->to_string;
+		$response =~ s/101/$status_code/;
+	    my $writer = WebSocketClientWriter->new;
+            $writer->send_text_to_client( $response, $client );
             $self->engine->clients_metadatas->{ $client->id }->write_watcher->start;
 
             #Close connection if not authenticated or bad handshake, client will end the connection because of 401 status code or 400
-            if (!$authenticated || 	$handshake->error ) {
+            if (!$authenticated || $handshake->error ) {
                 $writer->close_client ($client);
             }
         }

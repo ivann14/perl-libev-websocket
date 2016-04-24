@@ -9,7 +9,7 @@
             if ("WebSocket" in window)
             {
                // Let us open a web socket
-               ws = new WebSocket("ws://127.0.0.1:2222/echo");
+               ws = new WebSocket("ws://52.29.54.214:2222/echo");
 	
 
 
@@ -73,8 +73,13 @@ alert(reason);
 		 
 		 function sendMSG()
 		 {
-alert("sending");
 			ws.send(document.getElementById("txt").value);
+			
+		 }
+
+		 function closeConnection()
+		 {
+			ws.close();
 			
 		 }
       </script>
@@ -83,10 +88,12 @@ alert("sending");
    <body>
    
       <div id="sse">
+	After 20 seconds of inactivity, server will ping the client. After receiving pong, server sends "Pong received." message. <br />
+	If there is a cookie with key login and value false, client gets response with 401 status code and connection will fail.<br />
          <a href="javascript:WebSocketTest()">Run WebSocket</a>
-		 <input type="button" id="idd" onclick="javascript:sendMSG()" > Send Message</input>
-      </div>
-	  
+		 <input type="button" id="idd" onclick="javascript:sendMSG()" value="Send Message"/>  
+<input type="button" id="idClose" onclick="javascript:closeConnection()" value="Close connection"/>     </div>
+	   
 	  <div id="chat">
 		 </div>
 	  

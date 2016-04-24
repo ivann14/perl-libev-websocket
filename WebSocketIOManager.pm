@@ -47,7 +47,7 @@ sub process_websocket_data {
             $job = $engine->process_pong_data( $bytes, $client );
         }
         elsif ( $frame->is_ping ) {
-            $job = $engine->process_ping_data->( $self, $bytes, $client );
+            $job = $engine->process_ping_data( $self, $bytes, $client );
         }
         elsif ( $frame->is_close ) {
             $job = $engine->process_client_disconnecting($client);

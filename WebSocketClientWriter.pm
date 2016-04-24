@@ -14,7 +14,7 @@ sub new {
 }
 
 sub send_text_to_client {
-    my ( $self, $client, $text ) = @_;
+    my ( $self, $text, $client ) = @_;
 
     my $frame = Protocol::WebSocket::Frame->new($text);
     $self->enqueue_frame_for_client ( $client, $frame );
@@ -55,7 +55,6 @@ sub ping_client {
 		die "WebSocketClient was not supplied."
 	}
 
-
     my $frame_to_send = Protocol::WebSocket::Frame->new( type => 'ping' );
     $frame_to_send->append('ping');
 
@@ -66,7 +65,6 @@ sub close_client {
     my ( $self, $client, $code, $reason ) = @_;
 
     $client->set_closing(1);
-    $client->empty_write_buffer();
 
     $code   = $code   || 1000;
     $reason = $reason || '';
