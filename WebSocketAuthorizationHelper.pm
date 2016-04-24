@@ -32,7 +32,7 @@ sub authorize_client {
 
         if ( $handshake->error ) {
 		#Handshake is corrupted fail the connection immediately
-            $self->engine->process_client_connection_is_closed;
+            $self->engine->process_client_connection_is_closed ($client);
         }
         if ( $handshake->is_done ) {
 		my $request = WebSocketRequest->new ($handshake->req);
@@ -41,7 +41,6 @@ sub authorize_client {
             
  		#If not authenticated set response status to 401, client will fail connection because status was not 101
 		if (!$authenticated) {
-print "failed \n";
 			$handshake->res->{'status'} = "401";
 		}
 	    my $writer = WebSocketClientWriter->new;
@@ -50,7 +49,7 @@ print "failed \n";
 
 		#Close connection if not authenticated, because client will fail the connection because of 401 status code
 	    if (!$authenticated) {
-		$writer->close_client( $client );
+		$self->engine->process_client_connection_is_closed ($client);
 	    }
         }
     }
