@@ -2,5 +2,5 @@
 
 Running example on localhost
 
-cd SandBox
+cd SandBox <br />
 perl Chat.pl
