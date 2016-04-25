@@ -15,8 +15,8 @@ sub new {
 
 sub read_from_socket {
     my ( $self, $file_handle, $size ) = @_;
-	
-	$size = $size || 1024;
+
+    $size = $size || 1024;
     my $buffer;
     sysread( $file_handle, $buffer, $size );
 
@@ -52,7 +52,7 @@ sub process_websocket_data {
         elsif ( $frame->is_close ) {
             $job = $engine->process_client_disconnecting($client);
         }
-            ThreadWorkers::enqueue_job($job);
+        ThreadWorkers::enqueue_job($job);
     }
 }
 
@@ -66,9 +66,9 @@ sub send_buffered_data_to_socket {
 
         if ( $msg_to_send->is_close ) {
             $fh->close();
-		my $job : shared = shared_clone ({ }); 
-            $job = $engine->process_client_connection_is_closed ($client);
-		ThreadWorkers::enqueue_job ($job);
+            my $job : shared = shared_clone( {} );
+            $job = $engine->process_client_connection_is_closed($client);
+            ThreadWorkers::enqueue_job($job);
         }
 
         if ( $msg_to_send->is_ping ) {

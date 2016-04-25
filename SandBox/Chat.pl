@@ -21,9 +21,12 @@ my $socket = IO::Socket::INET->new(
 ) or die "Error creating socket $!";
 
 my $server = WebSocketServer->new(
-    socket                           => $socket,
-    websocket_engine                 => WebSocketEngine->new( close_after_no_pong  => 20, ping_after_seconds_of_inactivity => 20 ),
-    number_of_thread_workers         => 2,
+    socket           => $socket,
+    websocket_engine => WebSocketEngine->new(
+        close_after_no_pong              => 20,
+        ping_after_seconds_of_inactivity => 20
+    ),
+    number_of_thread_workers => 2,
 );
 
 $server->run_server();

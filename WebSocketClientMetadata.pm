@@ -12,7 +12,8 @@ sub new {
         id            => $args{id},
         write_watcher => $args{write_watcher},
         read_watcher  => $args{read_watcher},
-        handshake     => $args{handshake} || Protocol::WebSocket::Handshake::Server->new(),
+        handshake     => $args{handshake}
+          || Protocol::WebSocket::Handshake::Server->new(),
     }, $class;
     return $self;
 }
@@ -41,11 +42,7 @@ __END__
 
 =head1 NAME
 
-WebSocketClientMetadata - WebSocket client metadata
-
-=head1 SYNOPSIS
-	
-	
+WebSocketClientMetadata - WebSocket client metadata		
 
 =head1 DESCRIPTION
 

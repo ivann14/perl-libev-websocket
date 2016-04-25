@@ -36,13 +36,13 @@ sub enqueue_job {
 
     if ( UNIVERSAL::can( $job, 'can' ) && $job->can('DoJob') ) {
 
-    if ($process_async) {
-        $jobQueue->enqueue($job);
+        if ($process_async) {
+            $jobQueue->enqueue($job);
+        }
+        else {
+            $job->DoJob();
+        }
     }
-    else {
-        $job->DoJob();
-    }
-}
 }
 
 1;

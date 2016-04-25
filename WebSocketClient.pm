@@ -13,7 +13,7 @@ sub new {
     my %self : shared;
     $self{id}            = $args{id};
     $self{last_active}   = $args{last_active};
-    $self{write_buffer}   = Thread::Queue->new();
+    $self{write_buffer}  = Thread::Queue->new();
     $self{closing}       = 0;
     $self{resource_name} = $args{resource_name};
     bless( \%self, $class );

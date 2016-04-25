@@ -49,12 +49,10 @@ sub set_clients_metadatas {
     $self->{clients_metadatas} = $metadatas;
 }
 
-
 sub ping_after_seconds_of_inactivity {
     my ($self) = @_;
     return $self->{ping_after_seconds_of_inactivity};
 }
-
 
 sub close_after_no_pong {
     my ($self) = @_;
@@ -72,10 +70,11 @@ sub process_binary_data {
 sub process_pong_data {
     my ( $self, $data, $client ) = @_;
 
-	if ($data eq "ping"){
-    		# Reset pinged time, after pong is received
-    		$client->set_pinged( undef );
-	}
+    if ( $data eq "ping" ) {
+
+        # Reset pinged time, after pong is received
+        $client->set_pinged(undef);
+    }
 }
 
 sub process_ping_data {
@@ -84,13 +83,11 @@ sub process_ping_data {
     my $job = PingReceivedJob->new( data => $data, client->$client );
 }
 
-
 sub process_client_disconnecting {
     my ( $self, $client ) = @_;
 
     WebSocketClientWriter->new->close_client($client);
 }
-
 
 sub process_client_connection_is_closed {
     my ( $self, $client ) = @_;
@@ -98,7 +95,6 @@ sub process_client_connection_is_closed {
     delete $self->clients_metadatas->{ $client->id };
     $self->clients->remove( $client->id );
 }
-
 
 sub close_client_or_keep_alive {
     my ( $self, $currentClient ) = @_;
@@ -117,7 +113,6 @@ sub close_client_or_keep_alive {
         WebSocketClientWriter->new->ping_client($currentClient);
     }
 }
-
 
 sub authenticate_client {
     my ( $self, $client, $request ) = @_;

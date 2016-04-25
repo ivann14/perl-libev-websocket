@@ -13,8 +13,8 @@ sub new {
 
     my %self : shared;
 
-    $self{client}  = $args{client} || die "Supply WebSocketClient.";
-    $self{data}    = $args{data} || die "Supply data to be sent.";
+    $self{client} = $args{client} || die "Supply WebSocketClient.";
+    $self{data}   = $args{data}   || die "Supply data to be sent.";
 
     bless( \%self, $class );
 

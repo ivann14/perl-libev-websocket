@@ -59,7 +59,9 @@ sub map_action {
     my $lock = $self->{'lock'};
     lock($lock);
     my $hash = $self->internal_hash();
-    keys %{ $hash };   # reset the internal iterator so a prior each() doesn't affect the loop
+    
+    #Reset the internal iterator so a prior each() doesn't affect the loop
+    keys %{ $hash };   
 
     while ( my ( $k, $v ) = each %{$hash} ) {
         $action->( $k, $v );

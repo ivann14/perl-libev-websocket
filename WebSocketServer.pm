@@ -17,14 +17,14 @@ use ThreadWorkers;
 
 sub new {
     my ( $class, %args ) = @_;
-	
+
     my $self = bless {
-        socket                   => $args{socket},
-        websocket_engine         => $args{websocket_engine},
-        clients                  => $args{clients} || shared_clone( ThreadSafeHash->new() ),
-        clients_metadatas        => $args{clients_metadatas} || {},
+        socket           => $args{socket},
+        websocket_engine => $args{websocket_engine},
+        clients => $args{clients} || shared_clone( ThreadSafeHash->new() ),
+        clients_metadatas => $args{clients_metadatas} || {},
         number_of_thread_workers => $args{number_of_thread_workers} || 0,
-        loop                     => $args{loop} || EV::default_loop,
+        loop => $args{loop} || EV::default_loop,
     }, $class;
 
     $self->websocket_engine->set_loop( $self->{loop} );
@@ -59,9 +59,8 @@ sub run_server {
 
     ThreadWorkers::init_thread_workers( $self->{number_of_thread_workers} );
 
-    my $authHelper = WebSocketAuthorizationHelper->new(
-    	engine => $self->websocket_engine
-    );
+    my $authHelper =
+      WebSocketAuthorizationHelper->new( engine => $self->websocket_engine );
 
     my $w = $self->{loop}->io(
         $self->{socket},
@@ -78,11 +77,17 @@ sub run_server {
                         my ( $w_io, $revents ) = @_;
                         my $client = $self->get_client_by_id( $w_io->data );
 
+                        if ( $client->closing ) {
+                            $w_io->stop();
+                            return;
+                        }
+
                         my $io_manager = WebSocketIOManager->new();
-                        my $buffer     = $io_manager->read_from_socket( $w_io->fh );
+                        my $buffer = $io_manager->read_from_socket( $w_io->fh );
 
                         if ($buffer) {
-                  # Change the time when the client was active for the last time
+
+                            # Change the time when the client was active for the last time
                             $client->set_last_active( time() );
 
                             # If client has been authorize, then read data
@@ -123,4 +128,57 @@ sub run_server {
 }
 
 1;
+__END__
 
+=head1 NAME
+
+WebSocketServer - WebSocket server
+
+=head1 SYNOPSIS
+	my $socket = IO::Socket::INET->new(
+		Proto     => "tcp",
+		LocalPort => $port,
+		LocalHost => $ip,
+		Listen    => 5,
+		Reuse     => 5,
+		Type      => SOCK_STREAM,
+		Blocking  => 0,
+	) or die "Error creating socket $!";
+
+	my $server = WebSocketServer->new(
+    		socket                           => $socket,
+    		websocket_engine                 => Abstract_WebSocketEngine_Instance->new,
+    		number_of_thread_workers         => 2,
+	);
+
+$server->run_server();
+
+=head1 DESCRIPTION
+
+This class is websocket server. Listens and accepts clients on given custom socket. Can be customized by passing instace of the class that derives from AbstractWebSocketEngine class as parameter.
+  
+=head2 Methods
+
+=over 12
+
+=item C<new>
+
+Constructor. Takes 2 parameters. Instace of the class that derives from AbstractWebSocketEngine and socket.
+
+=item C<clients>
+
+Returns ThreadSafeHash with currently connected WebSocket clients.
+
+=item C<clients_metadatas>
+
+Returns hash with metadatas about currently connected WebSocket clients.
+
+=item C<get_client_by_id>
+
+Returns WebSocketClient by given id. 
+
+=item C<run_server>
+
+Starts WebSocketServer. Server is now listening on given socket and accepting clients connections.
+
+=back

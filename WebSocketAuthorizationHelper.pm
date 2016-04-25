@@ -10,9 +10,11 @@ use WebSocketRequest;
 sub new {
     my ( $class, %args ) = @_;
 
-    my $self = bless {
-        engine            => $args{engine} || die "Supply instance of class that derives from AbstractWebSocketEngine.",
-    }, $class;
+    my $self =
+      bless { engine => $args{engine}
+          || die
+          "Supply instance of class that derives from AbstractWebSocketEngine.",
+      }, $class;
 
     return $self;
 }
@@ -25,38 +27,47 @@ sub engine {
 sub authorize_client {
     my ( $self, $client, $buffer ) = @_;
 
-    my $handshake = $self->engine->clients_metadatas->{ $client->id }->handshake;
+    my $handshake =
+      $self->engine->clients_metadatas->{ $client->id }->handshake;
     if ( !$handshake->is_done ) {
         $handshake->parse($buffer);
 
         if ( $handshake->is_done ) {
-            my $request = WebSocketRequest->new ($handshake->req);
+            my $request = WebSocketRequest->new( $handshake->req );
             $client->set_resource_name( $request->resource_name );
-		
+
             my $authenticated = 1;
-            my $status_code = 101;
-			if ( $handshake->error ) {
-                # If handshake does not fullfill RFC respond with 400 and close connection
-            	$status_code = 400;
-        	}else{
-                $authenticated = $self->engine->authenticate_client ( $client, $request );
-            
-                #If not authenticated set response status to 401, client will fail connection because status was not 101
-                if (!$authenticated) {
+            my $status_code   = 101;
+            my $bad_request   = $handshake->error;
+
+            # If handshake does not fullfill RFC respond with 400 and close connection
+            if ( $bad_request ) {
+                $status_code = 400;
+            }
+            else {
+                $authenticated =
+                  $self->engine->authenticate_client( $client, $request );
+
+                #If not authenticated set response status to 401
+                if ( !$authenticated ) {
                     $status_code = 401;
                 }
             }
-	
 
-		my $response = $handshake->to_string;
-		$response =~ s/101/$status_code/;
-	    my $writer = WebSocketClientWriter->new;
+            my $response = $handshake->to_string;
+
+            if ( !$authenticated || $bad_request ) {
+                $response =~ s/101/$status_code/;
+            }
+
+            my $writer = WebSocketClientWriter->new;
             $writer->send_text_to_client( $response, $client );
-            $self->engine->clients_metadatas->{ $client->id }->write_watcher->start;
+            $self->engine->clients_metadatas->{ $client->id }
+              ->write_watcher->start;
 
-            #Close connection if not authenticated or bad handshake, client will end the connection because of 401 status code or 400
-            if (!$authenticated || $handshake->error ) {
-                $writer->close_client ($client);
+            #Close connection if not authenticated or bad handshake, client should end the connection because of 401 status code or 400
+            if ( !$authenticated || $bad_request ) {
+                $writer->close_client($client);
             }
         }
     }

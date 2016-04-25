@@ -13,7 +13,7 @@ sub new {
     my ( $class, %args ) = @_;
     my %self : shared;
     $self{client} = $args{client};
-    $self{data}    = $args{data};
+    $self{data}   = $args{data};
 
     bless( \%self, $class );
 
@@ -22,7 +22,8 @@ sub new {
 
 sub DoJob {
     my ($self) = @_;
-    WebSocketClientWriter->new->send_text_to_client( $self->{data}, $self->{client} );
+    WebSocketClientWriter->new->send_text_to_client( $self->{data},
+        $self->{client} );
 }
 
 1;
