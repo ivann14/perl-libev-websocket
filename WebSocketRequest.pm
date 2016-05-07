@@ -60,8 +60,12 @@ sub get_cookie_value {
 
     my $TOKEN  = qr/[^;,\s"]+/;
     my $string = $self->{request}->{fields}->{cookie};
-    $string =~ m/\s*($key)\s*(?:=\s*($TOKEN))?;?/g;
-    return $2;
+	if ($string) {
+		$string =~ m/\s*($key)\s*(?:=\s*($TOKEN))?;?/g;
+		return $2;
+	}
+	
+	return "";
 }
 
 1;
