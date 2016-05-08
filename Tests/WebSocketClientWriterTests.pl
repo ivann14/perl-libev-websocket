@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-use lib '..';
+use lib '../lib';
 
 use Test::More tests => 19;
 use Thread::Queue;

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-use lib '..';
+use lib '../lib';
 
 use threads;
 use threads::shared;
