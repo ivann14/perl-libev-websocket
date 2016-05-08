@@ -4,7 +4,7 @@ package WebSocketEngine;
 use strict;
 use warnings;
 
-use lib '..';
+use lib '../lib';
 
 use parent 'AbstractWebSocketEngine';
 use ReadJob;

@@ -3,7 +3,7 @@ package PongJob;
 use strict;
 use warnings;
 
-use lib '..';
+use lib '../lib';
 
 use parent 'AbstractJob';
 

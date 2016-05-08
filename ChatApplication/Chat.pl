@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use lib '..';
+use lib '../lib';
 
 use WebSocketServer;
 use WebSocketEngine;
@@ -23,8 +23,8 @@ my $socket = IO::Socket::INET->new(
 my $server = WebSocketServer->new(
     socket           => $socket,
     websocket_engine => WebSocketEngine->new(
-        close_after_no_pong              => 20,
-        ping_after_seconds_of_inactivity => 20
+        close_after_no_pong              => 10,
+        ping_after_seconds_of_inactivity => 10
     ),
     number_of_thread_workers => 2,
 );
