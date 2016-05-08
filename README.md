@@ -2,5 +2,10 @@
 
 Running example on localhost
 
-cd SandBox <br />
-perl Chat.pl
+cd ChatApplication <br />
+perl Chat.pl <br />
+
+Or <br />
+
+cd MouseTrackingApplication <br />
+perl MouseTrackingApplication.pl <br />
