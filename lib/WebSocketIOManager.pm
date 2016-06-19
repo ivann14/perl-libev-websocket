@@ -27,7 +27,7 @@ sub process_websocket_data {
     my ( $self, $engine, $data, $client ) = @_;
 
     if ( $client->closing ) {
-        return;
+        return undef;
     }
 
     my $frame = Protocol::WebSocket::Frame->new();
@@ -52,8 +52,11 @@ sub process_websocket_data {
         elsif ( $frame->is_close ) {
             $job = $engine->process_client_disconnecting($client);
         }
-        ThreadWorkers::enqueue_job($job);
+        
+        return $job;
     }
+    
+    return undef;
 }
 
 sub send_buffered_data_to_socket {

@@ -22,67 +22,56 @@ sub new {
 
 sub id {
     my ($self) = @_;
-    lock($self);
     return $self->{id};
 }
 
 sub resource_name {
     my ($self) = @_;
-    lock($self);
     return $self->{resource_name};
 }
 
 sub set_resource_name {
     my ( $self, $resource_name ) = @_;
-    lock($self);
     $self->{resource_name} = $resource_name;
 }
 
 sub pinged {
     my ($self) = @_;
-    lock($self);
     return $self->{pinged};
 }
 
 sub set_pinged {
     my ( $self, $pinged ) = @_;
-    lock($self);
     $self->{pinged} = $pinged;
 }
 
 sub last_active {
     my ($self) = @_;
-    lock($self);
     return $self->{last_active};
 }
 
 sub set_last_active {
     my ( $self, $last_active ) = @_;
-    lock($self);
     $self->{last_active} = $last_active;
 }
 
 sub closing {
     my ($self) = @_;
-    lock($self);
     return $self->{closing};
 }
 
 sub set_closing {
     my ( $self, $closing ) = @_;
-    lock($self);
     $self->{last_active} = $closing;
 }
 
 sub write_buffer {
     my ($self) = @_;
-    lock($self);
     return $self->{write_buffer};
 }
 
 sub empty_write_buffer {
     my ($self) = @_;
-    lock($self);
     $self->{write_buffer} = Thread::Queue->new();
 }
 
@@ -99,7 +88,7 @@ WebSocketClient - WebSocket client
     
 =head1 DESCRIPTION
 
-This class is the representation of the connected websocket client. Contains all the data about client that can be shared between threads. WebSocket client has write buffer to enqueue messages. These messages will be sent to client, if the client's socket is writeable. This class is thread safe.
+This class is the representation of the connected websocket client. Contains all the data about client that can be shared between threads. WebSocket client has write buffer to enqueue messages. These messages will be sent to client, if the client's socket is writeable.
   
 =head2 Methods
 

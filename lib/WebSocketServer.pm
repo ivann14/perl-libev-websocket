@@ -92,8 +92,10 @@ sub run_server {
 
                             # If client has been authorize, then read data
                             if ( $authHelper->is_handshake_finished($client) ) {
-                                $io_manager->process_websocket_data(
-                                    $self->websocket_engine, $buffer, $client );
+                                my $job = $io_manager->process_websocket_data( $self->websocket_engine, $buffer, $client );
+                                if ($job) {
+                                    ThreadWorkers::enqueue_job($job);
+                                }
                             }
                             else {
                                 # Authorize him first
