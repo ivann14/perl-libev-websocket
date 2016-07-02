@@ -29,10 +29,11 @@ sub process_websocket_data {
     if ( $client->closing ) {
         return undef;
     }
-
+    
     my $frame = Protocol::WebSocket::Frame->new();
     $frame->append($data);
     my $bytes;
+    
     while ( defined( $bytes = eval { $frame->next_bytes } ) ) {
         my $job : shared = shared_clone( {} );
         if ( $frame->is_binary ) {
@@ -40,14 +41,13 @@ sub process_websocket_data {
         }
         elsif ( $frame->is_text ) {
             $job =
-              $engine->process_text_data( Encode::decode( 'UTF-8', $bytes ),
-                $client );
+              $engine->process_text_data( $bytes, $client );
         }
         elsif ( $frame->is_pong ) {
             $job = $engine->process_pong_data( $bytes, $client );
         }
         elsif ( $frame->is_ping ) {
-            $job = $engine->process_ping_data( $self, $bytes, $client );
+            $job = $engine->process_ping_data( $bytes, $client );
         }
         elsif ( $frame->is_close ) {
             $job = $engine->process_client_disconnecting($client);

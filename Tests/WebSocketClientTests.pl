@@ -13,12 +13,12 @@ ok( defined $thread_safe_hash, 'thread safe hash is defined' );
 
 my $handshake = Protocol::WebSocket::Handshake::Server->new();
 my $client : shared =
-  WebSocketClient->new( id => 5, handshake => $handshake );
+  WebSocketClient->new( id => 5, handshake => $handshake, resource_name => 'test', last_active => '15:45' );
 
 ok( defined $client, 'new() returned something to shared variable' );
 ok( $client->isa('WebSocketClient'), 'and it is the right class' );
 
-ok( defined $client->handshake,      'client->handshake returned something' );
+ok( defined $client->handshake, 'client->handshake returned something' );
 ok( $client->handshake()->isa('Protocol::WebSocket::Handshake::Server'),
     'and it is the right class' );
 is( $client->handshake(), $handshake, 'client->handshake has correct value' );
@@ -32,6 +32,22 @@ is( $client->id(), 5, 'client->id has correct value' );
 ok( defined $client->closing, 'client->closing returned something' );
 is( $client->closing, 0, 'client->closing has correct default value' );
 
+ok( defined $client->resource_name, 'client->resource_name returned something' );
+is( $client->resource_name, 'test', 'client->closing has correct value' );
+
+ok( defined $client->last_active, 'client->resource_name returned something' );
+is( $client->last_active, '15:45', 'client->last_active has correct value' );
+
+$client->set_resource_name ('otherTest');
+is( $client->resource_name, 'otherTest', 'client->set_resource_name correctly sets value' );
+
+$client->set_last_active ('12:00');
+is( $client->set_last_active, '12:00', 'client->set_last_active correctly sets value' );
+
+$client->set_closing ('1');
+is( $client->set_closing, '1', 'client->set_closing correctly sets value' );
+
+#Testing WebSocketClient inside a ThreadSafeHash instance
 ok( $thread_safe_hash->Add( $client->id(), $client ),
     'add client to thread safe hash' );
 is( $thread_safe_hash->Contains( $client->id() ),
