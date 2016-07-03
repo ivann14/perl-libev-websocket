@@ -16,8 +16,10 @@ sub new {
 sub send_text_to_client {
     my ( $self, $text, $client ) = @_;
 
-    my $frame = Protocol::WebSocket::Frame->new($text);
+    my $frame = Protocol::WebSocket::Frame->new( buffer => $text, type => 'text' );
     $self->enqueue_frame_for_client( $client, $frame );
+
+    return 1;
 }
 
 sub send_text_to_clients {
@@ -27,7 +29,7 @@ sub send_text_to_clients {
         die "ThreadSafeHash with WebSocketClients was not supplied.";
     }
 
-    my $frame = Protocol::WebSocket::Frame->new($text);
+    my $frame = Protocol::WebSocket::Frame->new( buffer => $text, type => 'text' );
 
     $clients->map_action(
         sub {
@@ -35,6 +37,8 @@ sub send_text_to_clients {
             $client->write_buffer->enqueue($frame);
         }
     );
+
+    return 1;
 }
 
 sub enqueue_frame_for_client {
@@ -42,6 +46,10 @@ sub enqueue_frame_for_client {
 
     unless ( defined $client ) {
         die "WebSocketClient was not supplied.";
+    }
+
+    unless ( defined $frame ) {
+        die "WebSocket frame was not supplied.";
     }
 
     $client->write_buffer->enqueue($frame);
@@ -53,11 +61,10 @@ sub ping_client {
     unless ( defined $client ) {
         die "WebSocketClient was not supplied.";
     }
-
-    my $frame_to_send = Protocol::WebSocket::Frame->new( type => 'ping' );
+	
     my $text = $data || 'ping';
-    $frame_to_send->append($text);
-
+    my $frame_to_send = Protocol::WebSocket::Frame->new( buffer => $text, type => 'ping' );
+    
     $client->write_buffer->insert( 0, $frame_to_send );
 }
 
@@ -77,9 +84,7 @@ sub close_client {
 
     my $data = pack( "na*", $code, $reason );
     my $type = { close => $data };
-    my $frame = new Protocol::WebSocket::Frame( type => 'close' );
-
-    $frame->append($data);
+    my $frame = new Protocol::WebSocket::Frame( buffer => $data, type => 'close' );
 
     $self->enqueue_frame_for_client( $client, $frame );
 }

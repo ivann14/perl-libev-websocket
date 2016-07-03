@@ -62,7 +62,7 @@ sub closing {
 
 sub set_closing {
     my ( $self, $closing ) = @_;
-    $self->{last_active} = $closing;
+    $self->{closing} = $closing;
 }
 
 sub write_buffer {

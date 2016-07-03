@@ -3,7 +3,6 @@ package AbstractWebSocketEngine;
 use strict;
 use warnings;
 
-use ReadJob;
 use PingReceivedJob;
 use WebSocketClient;
 

@@ -82,7 +82,7 @@ ThreadSafeHash - Thread safe hash
 
 =head1 SYNOPSIS
 	
-	my $hash : shared = shared_clone (ThreadSafeinternal_hash ->new );
+	my $hash : shared = shared_clone( ThreadSafeHash ->new );
 	$hash -> add ("key", "some shared value");
 	$hash -> contains ("key");
 	my $value = $hash -> get_value("key");
