@@ -12,7 +12,6 @@ my $client : shared =
 ok( defined $client, 'new() returned something to shared variable' );
 ok( $client->isa('WebSocketClient'), 'and it is the right class' );
 
-
 ok( defined $client->write_buffer, 'client->write_buffer returned something' );
 ok( $client->write_buffer->isa('Thread::Queue'), 'and it is the right class' );
 

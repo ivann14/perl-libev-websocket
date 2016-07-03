@@ -29,7 +29,7 @@ sub process_websocket_data {
     if ( $client->closing ) {
         return undef;
     }
-
+    
     my $frame = Protocol::WebSocket::Frame->new();
     $frame->append($data);
     my $bytes;
