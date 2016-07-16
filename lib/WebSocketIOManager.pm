@@ -29,15 +29,15 @@ sub process_websocket_data {
     if ( $client->closing ) {
         return undef;
     }
-    
-    my $frame = Protocol::WebSocket::Frame->new();
+        my $frame = Protocol::WebSocket::Frame->new();
     $frame->append($data);
     my $bytes;
 
     while ( defined( $bytes = eval { $frame->next_bytes } ) ) {
         my $job : shared = shared_clone( {} );
         if ( $frame->is_binary ) {
-            $engine->process_binary_data->( $bytes, $client );
+           $job = 
+		$engine->process_binary_data( $bytes, $client );
         }
         elsif ( $frame->is_text ) {
             $job =

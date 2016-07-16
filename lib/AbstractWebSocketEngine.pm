@@ -80,6 +80,7 @@ sub process_ping_data {
     my ( $self, $data, $client ) = @_;
 
     my $job = PingReceivedJob->new( data => $data, client->$client );
+    return $job;
 }
 
 sub process_client_disconnecting {

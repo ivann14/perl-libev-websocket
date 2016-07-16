@@ -22,6 +22,10 @@ sub process_text_data {
     return $job;
 }
 
+sub process_binary_data {
+    my ( $self, $data, $client ) = @_;
+}
+
 sub authenticate_client {
     my ( $self, $client, $request ) = @_;
     my $value = $request->get_cookie_value("login");
