@@ -103,8 +103,6 @@ WebSocketClientWriter - Enqueues WebSocket frames into client's write buffer
 	$writer->ping_client($client);
 	$writer->close_client($client);
 
-$server->run_server();
-
 =head1 DESCRIPTION
 
 This class enqueues WebSocket frames into client's write buffer.
