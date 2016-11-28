@@ -68,6 +68,16 @@ sub ping_client {
     $client->write_buffer->insert( 0, $frame_to_send );
 }
 
+
+sub send_pong_to_client {
+    my ( $self, $text, $client ) = @_;
+
+    my $frame = Protocol::WebSocket::Frame->new( buffer => $text, type => 'pong' );
+    $self->enqueue_frame_for_client( $client, $frame );
+
+    return 1;
+}
+
 sub close_client_immediately {
     my ( $self, $client, $code, $reason ) = @_;
     $client->empty_write_buffer();
@@ -101,6 +111,7 @@ WebSocketClientWriter - Enqueues WebSocket frames into client's write buffer
 	$writer->send_text_to_client("Message", $client);
 	$writer->send_text_to_clients("Message for all", $clients);
 	$writer->ping_client($client);
+	$writer->ping_client($text, $client);
 	$writer->close_client($client);
 
 =head1 DESCRIPTION
@@ -119,13 +130,17 @@ Constructor.
 
 Enqueues WebSocket text frame with given text into client's write buffer.
 
-=item C<send_text_to_client>
+=item C<send_text_to_clients>
 
 Enqueues WebSocket text frame with given text into all clients write buffer.
 
 =item C<ping_client>
 
 Inserts a ping frame into client's write buffer.
+
+=item C<send_pong_to_client>
+
+Inserts a pong frame into client's write buffer.
 
 =item C<close_client>
 
