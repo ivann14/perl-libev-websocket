@@ -79,7 +79,7 @@ sub ping_client {
 
 
 sub send_pong_to_client {
-    my ( $self, $text, $client ) = @_;
+    my ( $self, $client, $text ) = @_;
 
     my $message = WebSocketMessage->new( buffer => $text, type => 'pong' );
     $self->enqueue_message_for_client( $client, $message );
