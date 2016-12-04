@@ -65,7 +65,7 @@ sub send_buffered_data_to_socket {
     my $msg_to_send = $buf->dequeue_nb();
 
     if ($msg_to_send) {
-        print $fh $msg_to_send->get_data;
+        syswrite( $fh, $msg_to_send->get_data );
 
         if ( $msg_to_send->is_close ) {
             $fh->close();
