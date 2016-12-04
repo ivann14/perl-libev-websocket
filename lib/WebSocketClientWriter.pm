@@ -3,7 +3,7 @@ package WebSocketClientWriter;
 use strict;
 use warnings;
 
-use Protocol::WebSocket;
+use WebSocketMessage;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -16,8 +16,8 @@ sub new {
 sub send_text_to_client {
     my ( $self, $text, $client ) = @_;
 
-    my $frame = Protocol::WebSocket::Frame->new( buffer => $text, type => 'text' );
-    $self->enqueue_frame_for_client( $client, $frame );
+    my $message = WebSocketMessage->new( buffer => $text, type => 'text' );
+    $self->enqueue_message_for_client( $client, $message );
 
     return 1;
 }
@@ -29,30 +29,39 @@ sub send_text_to_clients {
         die "ThreadSafeHash with WebSocketClients was not supplied.";
     }
 
-    my $frame = Protocol::WebSocket::Frame->new( buffer => $text, type => 'text' );
+    my $message = WebSocketMessage->new( buffer => $text, type => 'text' );
 
     $clients->map_action(
         sub {
             my ( $id, $client ) = @_;
-            $client->write_buffer->enqueue($frame);
+            $client->write_buffer->enqueue($message);
         }
     );
 
     return 1;
 }
 
-sub enqueue_frame_for_client {
-    my ( $self, $client, $frame ) = @_;
+sub send_handshake_response_to_client {
+    my ( $self, $text, $client ) = @_;
+
+    my $message = WebSocketMessage->new( buffer => $text, type => 'handshake' );
+    $self->enqueue_message_for_client( $client, $message );
+
+    return 1;
+}
+
+sub enqueue_message_for_client {
+    my ( $self, $client, $message ) = @_;
 
     unless ( defined $client ) {
         die "WebSocketClient was not supplied.";
     }
 
-    unless ( defined $frame ) {
+    unless ( defined $message ) {
         die "WebSocket frame was not supplied.";
     }
 
-    $client->write_buffer->enqueue($frame);
+    $client->write_buffer->enqueue($message);
 }
 
 sub ping_client {
@@ -63,17 +72,17 @@ sub ping_client {
     }
 	
     my $text = $data || 'ping';
-    my $frame_to_send = Protocol::WebSocket::Frame->new( buffer => $text, type => 'ping' );
+    my $message_to_send = WebSocketMessage->new( buffer => $text, type => 'ping' );
     
-    $client->write_buffer->insert( 0, $frame_to_send );
+    $client->write_buffer->insert( 0, $message_to_send );
 }
 
 
 sub send_pong_to_client {
     my ( $self, $text, $client ) = @_;
 
-    my $frame = Protocol::WebSocket::Frame->new( buffer => $text, type => 'pong' );
-    $self->enqueue_frame_for_client( $client, $frame );
+    my $message = WebSocketMessage->new( buffer => $text, type => 'pong' );
+    $self->enqueue_message_for_client( $client, $message );
 
     return 1;
 }
@@ -94,9 +103,9 @@ sub close_client {
 
     my $data = pack( "na*", $code, $reason );
     my $type = { close => $data };
-    my $frame = new Protocol::WebSocket::Frame( buffer => $data, type => 'close' );
+    my $message = WebSocketMessage->new( buffer => $data, type => 'close' );
 
-    $self->enqueue_frame_for_client( $client, $frame );
+    $self->enqueue_message_for_client( $client, $message );
 }
 
 1;
@@ -104,7 +113,7 @@ __END__
 
 =head1 NAME
 
-WebSocketClientWriter - Enqueues WebSocket frames into client's write buffer
+WebSocketClientWriter - Enqueues WebSocket messages into client's write buffer
 
 =head1 SYNOPSIS
 	$writer = WebSocketClientWriter->new;
@@ -116,7 +125,7 @@ WebSocketClientWriter - Enqueues WebSocket frames into client's write buffer
 
 =head1 DESCRIPTION
 
-This class enqueues WebSocket frames into client's write buffer.
+This class enqueues WebSocket messages into client's write buffer.
   
 =head2 Methods
 
@@ -128,26 +137,30 @@ Constructor.
 
 =item C<send_text_to_client>
 
-Enqueues WebSocket text frame with given text into client's write buffer.
+Enqueues WebSocket text message with given text into client's write buffer.
 
 =item C<send_text_to_clients>
 
-Enqueues WebSocket text frame with given text into all clients write buffer.
+Enqueues WebSocket text message with given text into all clients write buffer.
 
 =item C<ping_client>
 
-Inserts a ping frame into client's write buffer.
+Inserts a ping message into client's write buffer.
 
 =item C<send_pong_to_client>
 
-Inserts a pong frame into client's write buffer.
+Inserts a pong message into client's write buffer.
 
 =item C<close_client>
 
-Enqueues WebSocket close frame with client's write buffer.
+Enqueues WebSocket close message with client's write buffer.
 
 =item C<close_client_immediately>
 
-Removes enqueued frames in client's write buffer and then enqueues WebSocket close frame.
+Removes enqueued frames in client's write buffer and then enqueues WebSocket close message.
+
+=item C<send_handshake_response_to_client>
+
+Inserts a WebSocket handshake response into client's write buffer.
 
 =back

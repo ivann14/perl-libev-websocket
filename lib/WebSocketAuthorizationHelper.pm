@@ -61,7 +61,7 @@ sub authorize_client {
             }
 
             my $writer = WebSocketClientWriter->new;
-            $writer->send_text_to_client( $response, $client );
+            $writer->send_handshake_response_to_client( $response, $client );
             $self->engine->clients_metadatas->{ $client->id }
               ->write_watcher->start;
 
