@@ -82,7 +82,7 @@ sub send_pong_to_client {
     my ( $self, $client, $text ) = @_;
 
     my $message = WebSocketMessage->new( buffer => $text, type => 'pong' );
-    $client->write_buffer->insert( 0, $message_to_send );
+    $client->write_buffer->insert( 0, $message );
 
     return 1;
 }

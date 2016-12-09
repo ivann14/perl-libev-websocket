@@ -2,8 +2,10 @@ package WebSocketIOManager;
 
 use strict;
 use warnings;
+
 use threads;
 use threads::shared;
+
 use AbstractWebSocketEngine;
 use Protocol::WebSocket;
 
@@ -19,22 +21,22 @@ sub read_from_socket {
     $size = $size || 1024;
     my $buffer;
     sysread( $file_handle, $buffer, $size );
-
+	
     return $buffer;
 }
 
 sub process_websocket_data {
-    my ( $self, $engine, $data, $client ) = @_;
+    my ( $self, $engine, $frame, $client ) = @_;
 
     if ( $client->closing ) {
         return undef;
     }
-        my $frame = Protocol::WebSocket::Frame->new();
-    $frame->append($data);
+
     my $bytes;
 
     while ( defined( $bytes = eval { $frame->next_bytes } ) ) {
         my $job : shared = shared_clone( {} );
+
         if ( $frame->is_binary ) {
            $job = 
 		$engine->process_binary_data( $bytes, $client );
@@ -65,7 +67,7 @@ sub send_buffered_data_to_socket {
     my $msg_to_send = $buf->dequeue_nb();
 
     if ($msg_to_send) {
-        syswrite( $fh, $msg_to_send->get_data );
+        syswrite ( $fh, $msg_to_send->get_data );
 
         if ( $msg_to_send->is_close ) {
             $fh->close();
@@ -107,11 +109,11 @@ This class is used for managing (reading/writing) the client's socket.
 
 =item C<read_from_socket>
 
-Returns data read from supplied socket.
+Returns data read from the supplied socket.
 
 =item C<process_websocket_data>
 
-Takes 3 parameters. Instance that derives from AbstractWebSocketEngine, websocket client and read data from the socket. Then recognizes sent data and calls AbstractWebSocketEngine's appropriate method.
+Takes 3 parameters. Instance that derives from AbstractWebSocketEngine, websocket client and webSocket frame read from the socket. Then recognizes sent data and calls AbstractWebSocketEngine's appropriate method.
 
 =item C<send_buffered_data_to_connection>
 
