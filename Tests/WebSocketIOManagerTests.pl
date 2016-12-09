@@ -6,7 +6,7 @@ use FileHandle;
 use threads;
 use Thread::Queue;
 use WebSocketIOManager;
-use Protocol::WebSocket::Handshake::Server;
+use Protocol::WebSocket;
 use ThreadSafeHash;
 
 
@@ -63,29 +63,39 @@ ok( $io_manager->isa('WebSocketIOManager'), 'and it is the right class' );
 # Text frame
 my $fh = FileHandle->new("DummyData/textFrame.dat", "r");
 my $data = $io_manager->read_from_socket($fh, undef);
-is( $io_manager->process_websocket_data($engine, $data, $client), 'Hello',
+$frame = Protocol::WebSocket::Frame->new();
+$frame->append($data);
+is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
    'processing websocket data with text frame, correct WebSocketEngine subroutine was called with correct input' );
 
 # Ping frame
 $fh = FileHandle->new("DummyData/pingFrame.dat", "r");
 $data = $io_manager->read_from_socket($fh, undef);
-is( $io_manager->process_websocket_data($engine, $data, $client), 'Hello',
+$frame = Protocol::WebSocket::Frame->new();
+$frame->append($data);
+is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
    'processing websocket data with ping frame, correct WebSocketEngine method was called with correct input' );
 
 # Pong frame
 $fh = FileHandle->new("DummyData/pongFrame.dat", "r");
 $data = $io_manager->read_from_socket($fh, undef);
-is( $io_manager->process_websocket_data($engine, $data, $client), 'Hello',
+$frame = Protocol::WebSocket::Frame->new();
+$frame->append($data);
+is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
    'processing websocket data with pong frame, correct WebSocketEngine method was called with correct input' );
 
 # Close frame
 $fh = FileHandle->new("DummyData/closeFrame.dat", "r");
 $data = $io_manager->read_from_socket($fh, undef);
-is( $io_manager->process_websocket_data($engine, $data, $client), 42,
+$frame = Protocol::WebSocket::Frame->new();
+$frame->append($data);
+is( $io_manager->process_websocket_data($engine, $frame, $client), 42,
    'processing websocket data with close frame, correct WebSocketEngine method was called' );
 
 # Binary frame
 $fh = FileHandle->new("DummyData/binaryFrame.dat", "r");
 $data = $io_manager->read_from_socket($fh, undef);
-is( $io_manager->process_websocket_data($engine, $data, $client), 24,
+$frame = Protocol::WebSocket::Frame->new();
+$frame->append($data);
+is( $io_manager->process_websocket_data($engine, $frame, $client), 24,
    'processing websocket data with binary frame, correct WebSocketEngine method was called' );
