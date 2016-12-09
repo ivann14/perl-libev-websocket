@@ -3,15 +3,10 @@
 use lib '../lib';
 
 use FileHandle;
-use threads;
-use Thread::Queue;
 use WebSocketIOManager;
 use Protocol::WebSocket;
-use ThreadSafeHash;
-
 
 package FakeWebSocketEngine;
-use Data::Dumper;
 use parent 'AbstractWebSocketEngine';
 
 sub new {
