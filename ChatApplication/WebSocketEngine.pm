@@ -8,7 +8,6 @@ use lib '../lib';
 
 use parent 'AbstractWebSocketEngine';
 use ReadJob;
-use PongJob;
 
 sub new {
     my $class = shift;
@@ -45,7 +44,6 @@ sub process_pong_data {
     my ( $self, $bytes, $client ) = @_;
 
     $self->SUPER::process_pong_data( $bytes, $client );
-    return PongJob->new( data => "Pong received.", client => $client );
 }
 
 sub process_client_connection_is_closed {

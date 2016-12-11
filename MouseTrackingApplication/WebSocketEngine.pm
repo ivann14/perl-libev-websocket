@@ -9,7 +9,6 @@ use lib '../lib';
 use JSON::MaybeXS qw(encode_json decode_json);
 use parent 'AbstractWebSocketEngine';
 use ReadJob;
-use PongJob;
 
 sub new {
     my $class = shift;
@@ -42,7 +41,6 @@ sub process_pong_data {
     my ( $self, $bytes, $client ) = @_;
 
     $self->SUPER::process_pong_data( $bytes, $client );
-    return PongJob->new( data => $bytes, client => $client );
 }
 
 
