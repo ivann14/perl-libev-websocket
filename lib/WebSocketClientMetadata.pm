@@ -14,6 +14,7 @@ sub new {
         read_watcher  => $args{read_watcher},
         handshake     => $args{handshake}
           || Protocol::WebSocket::Handshake::Server->new(),
+	frame     => $args{frame}
     }, $class;
     return $self;
 }
@@ -37,6 +38,17 @@ sub handshake {
     my ($self) = @_;
     return $self->{handshake};
 }
+
+sub frame {
+    my ($self) = @_;
+ 
+    if (not defined $self->{frame}) {
+	$self->{frame} = $self->handshake->build_frame;
+    }
+
+    return $self->{frame};
+}
+
 1;
 __END__
 

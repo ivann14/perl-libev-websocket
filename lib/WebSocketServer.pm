@@ -93,7 +93,8 @@ sub run_server {
                             # If client has been authorize, then read data
                             if ( $authHelper->is_handshake_finished($client) ) {
 
-				$frame = Protocol::WebSocket::Frame->new();
+				# Append data from socket to build WebSocket frame
+    				my $frame = $self->clients_metadatas->{$client->id}->frame;
 				$frame->append($buffer);
 
                                 my $job = $io_manager->process_websocket_data( $self->websocket_engine, $frame, $client );
