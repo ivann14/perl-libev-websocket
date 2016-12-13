@@ -64,6 +64,8 @@ sub prepare_write_watcher {
 			$this_watcher->stop;
 		}
 	});
+	
+	$self->{prepare_watcher} = $start_write_watcher;
     }
 
     return $self->{prepare_watcher};
