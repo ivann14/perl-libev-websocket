@@ -84,7 +84,8 @@ sub remember_client {
     my $accepted_client_metadata = WebSocketClientMetadata->new(
         id            => $client_id,
         read_watcher  => $w_io_read,
-        write_watcher => $w_io_write
+        write_watcher => $w_io_write,
+        client        => $accepted_client
     );
 
     $self->engine->clients->add( $accepted_client->id, $accepted_client );

@@ -14,7 +14,9 @@ sub new {
         read_watcher  => $args{read_watcher},
         handshake     => $args{handshake}
           || Protocol::WebSocket::Handshake::Server->new(),
-	frame     => $args{frame}
+	frame     => $args{frame},
+	prepare_watcher => $args{prepare_watcher},
+	client => $args{client},
     }, $class;
     return $self;
 }
@@ -47,6 +49,24 @@ sub frame {
     }
 
     return $self->{frame};
+}
+
+sub prepare_write_watcher {
+    my ($self) = @_;
+ 
+    if (not defined $self->{prepare_watcher}) {
+
+        my $start_write_watcher = $self->write_watcher->loop->prepare_ns (sub {
+		my ($this_watcher) = @_;
+
+		if ($self->{client}->write_buffer->peek) {
+			$self->write_watcher->start;
+			$this_watcher->stop;
+		}
+	});
+    }
+
+    return $self->{prepare_watcher};
 }
 
 1;

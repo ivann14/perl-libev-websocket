@@ -9,11 +9,13 @@ use threads::shared;
 use EV;
 use Protocol::WebSocket;
 use WebSocketClient;
+use WebSocketClientMetadata;
 use AbstractWebSocketEngine;
 use WebSocketIOManager;
 use WebSocketAuthorizationHelper;
 use ThreadSafeHash;
 use ThreadWorkers;
+use WebSocketClientMetadata;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -123,6 +125,11 @@ sub run_server {
                         WebSocketIOManager->new()
                           ->send_buffered_data_to_socket( $client,
                             $w_io->fh, $self->websocket_engine );
+
+			if ($self->clients_metadatas->{$client->id}) {
+				$self->clients_metadatas->{$client->id}->prepare_write_watcher->start;
+				$self->clients_metadatas->{$client->id}->write_watcher->stop;
+			}
                     }
                 );
 
