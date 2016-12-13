@@ -95,6 +95,7 @@ sub process_client_connection_is_closed {
     # Stop watchers, so the pending events are destroyed
     $self->clients_metadatas->{ $client->id }->write_watcher->stop;
     $self->clients_metadatas->{ $client->id }->read_watcher->stop;
+    $self->clients_metadatas->{ $client->id }->prepare_watcher->stop;
 
     delete $self->clients_metadatas->{ $client->id };
     $self->clients->remove( $client->id );
