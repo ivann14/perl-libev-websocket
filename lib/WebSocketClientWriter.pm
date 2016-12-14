@@ -32,11 +32,10 @@ sub send_text_to_clients {
     my $message = WebSocketMessage->new( buffer => $text, type => 'text' );
 
     $clients->map_action(
-        sub {
-            my ( $id, $client ) = @_;
-            $client->write_buffer->enqueue($message);
-        }
-    );
+       sub {
+             my ( $id, $client ) = @_;
+             $self-> enqueue_message_for_client($client, $message);
+       });
 
     return 1;
 }
