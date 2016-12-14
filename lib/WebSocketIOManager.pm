@@ -66,23 +66,29 @@ sub send_buffered_data_to_socket {
     my $buf         = $client->write_buffer;
     my $msg_to_send = $buf->dequeue_nb();
 
-    if ($msg_to_send) {
-        syswrite ( $fh, $msg_to_send->get_data );
+    my $msg_to_send;
 
-        if ( $msg_to_send->is_close ) {
-            $fh->close();
-            my $job : shared = shared_clone( {} );
-            $job = $engine->process_client_connection_is_closed($client);
-            ThreadWorkers::enqueue_job($job);
-        }
+	while (defined ($msg_to_send = eval { $buf->dequeue_nb() })){
+		if ($msg_to_send) {
 
-        if ( $msg_to_send->is_ping ) {
-            $client->set_pinged( time() );
-        }
-    }
-    else {
-        $engine->close_client_or_keep_alive($client);
-    }
+			syswrite ( $fh, $msg_to_send->get_data );
+
+			if ( $msg_to_send->is_close ) {
+				$fh->close();
+				my $job : shared = shared_clone( {} );
+				$job = $engine->process_client_connection_is_closed($client);
+				ThreadWorkers::enqueue_job($job);
+				
+				return;
+			}
+
+			if ( $msg_to_send->is_ping ) {
+				$client->set_pinged( time() );
+			}
+		} else {
+			$engine->close_client_or_keep_alive($client);
+		}
+	}
 }
 
 1;
