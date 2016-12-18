@@ -10,14 +10,8 @@ use threads::shared;
 use AbstractWebSocketEngine;
 use Protocol::WebSocket;
 
-sub new {
-    my ( $class, %args ) = @_;
-
-    return bless {}, $class;
-}
-
 sub read_from_socket {
-    my ( $self, $file_handle, $size ) = @_;
+    my ( $file_handle, $size ) = @_;
 
     $size = $size || 1024;
     my $buffer;
@@ -27,7 +21,7 @@ sub read_from_socket {
 }
 
 sub process_websocket_data {
-    my ( $self, $engine, $frame, $client ) = @_;
+    my ( $engine, $frame, $client ) = @_;
 
     if ( $client->closing ) {
         return undef;
@@ -63,7 +57,7 @@ sub process_websocket_data {
 }
 
 sub send_buffered_data_to_socket {
-    my ( $self, $client, $fh, $engine ) = @_;
+    my ( $client, $fh, $engine ) = @_;
     my $buf         = $client->write_buffer;
 
 	while (defined (my $msg_to_send = eval { $buf->dequeue_nb() })){
@@ -98,10 +92,9 @@ WebSocketIOManager - Manages work with the socket
 
 =head1 SYNOPSIS
 	
-	my $io_manager = WebSocketIOManager->new;
-	my $data = $io_manager->read_from_socket ( $socket, $size_to_read );
-	$io_manager->process_websocket_data( $engine, $data, $client );	
-	$io_manager-> send_buffered_data_to_socket( $weboscket_client, $socket, $abstract_websocket_engine );
+	my ($data, $bytes_read) = WebSocketIOManager::read_from_socket ( $socket, $size_to_read );
+	WebSocketIOManager::process_websocket_data( $engine, $data, $client );	
+	WebSocketIOManager::send_buffered_data_to_socket( $weboscket_client, $socket, $abstract_websocket_engine );
 
 =head1 DESCRIPTION
 
@@ -113,7 +106,7 @@ This class is used for managing (reading/writing) the client's socket.
 
 =item C<read_from_socket>
 
-Returns data read from the supplied socket.
+Returns data read from the supplied socket and number of bytes read.
 
 =item C<process_websocket_data>
 

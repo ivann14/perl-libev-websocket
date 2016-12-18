@@ -48,16 +48,10 @@ my $engine = FakeWebSocketEngine->new;
 my $client = WebSocketClient->new;
 my $result;
 
-# Test IOManager instance
-my $io_manager = WebSocketIOManager->new;
-ok( defined $io_manager, 'WebSocketIOManager is defined' );
-ok( defined $io_manager, 'new() returned something to shared variable' );
-ok( $io_manager->isa('WebSocketIOManager'), 'and it is the right class' );
-
 # Test processing websocket data
 # Text frame
 my $fh = FileHandle->new("DummyData/textFrame.dat", "r");
-my $data = $io_manager->read_from_socket($fh, undef);
+my $data = WebSocketIOManager::read_from_socket($fh, undef);
 $frame = Protocol::WebSocket::Frame->new();
 $frame->append($data);
 is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
@@ -65,7 +59,7 @@ is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
 
 # Ping frame
 $fh = FileHandle->new("DummyData/pingFrame.dat", "r");
-$data = $io_manager->read_from_socket($fh, undef);
+$data = WebSocketIOManager::read_from_socket($fh, undef);
 $frame = Protocol::WebSocket::Frame->new();
 $frame->append($data);
 is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
@@ -73,7 +67,7 @@ is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
 
 # Pong frame
 $fh = FileHandle->new("DummyData/pongFrame.dat", "r");
-$data = $io_manager->read_from_socket($fh, undef);
+$data = WebSocketIOManager::read_from_socket($fh, undef);
 $frame = Protocol::WebSocket::Frame->new();
 $frame->append($data);
 is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
@@ -81,7 +75,7 @@ is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
 
 # Close frame
 $fh = FileHandle->new("DummyData/closeFrame.dat", "r");
-$data = $io_manager->read_from_socket($fh, undef);
+$data = WebSocketIOManager::read_from_socket($fh, undef);
 $frame = Protocol::WebSocket::Frame->new();
 $frame->append($data);
 is( $io_manager->process_websocket_data($engine, $frame, $client), 42,
@@ -89,7 +83,7 @@ is( $io_manager->process_websocket_data($engine, $frame, $client), 42,
 
 # Binary frame
 $fh = FileHandle->new("DummyData/binaryFrame.dat", "r");
-$data = $io_manager->read_from_socket($fh, undef);
+$data = WebSocketIOManager::read_from_socket($fh, undef);
 $frame = Protocol::WebSocket::Frame->new();
 $frame->append($data);
 is( $io_manager->process_websocket_data($engine, $frame, $client), 24,

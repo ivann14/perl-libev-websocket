@@ -84,8 +84,7 @@ sub run_server {
                             return;
                         }
 
-                        my $io_manager = WebSocketIOManager->new();
-                        my ($buffer, $bytes_read) = $io_manager->read_from_socket( $w_io->fh );
+                        my ($buffer, $bytes_read) = WebSocketIOManager::read_from_socket( $w_io->fh );
 
 			if (not defined $bytes_read) { print "Error while reading. \n" };
 			
@@ -106,7 +105,7 @@ sub run_server {
     				my $frame = $self->clients_metadatas->{$client->id}->frame;
 				$frame->append($buffer);
 
-                                my $job = $io_manager->process_websocket_data( $self->websocket_engine, $frame, $client );
+                                my $job = WebSocketIOManager::process_websocket_data( $self->websocket_engine, $frame, $client );
                                 if ($job) {
                                     ThreadWorkers::enqueue_job($job);
                                 }
@@ -129,8 +128,7 @@ sub run_server {
                         my $client = $self->get_client_by_id( $w_io->data );
 
                         #Get message from client buffer and write
-                        WebSocketIOManager->new()
-                          ->send_buffered_data_to_socket( $client,
+                        WebSocketIOManager::send_buffered_data_to_socket( $client,
                             $w_io->fh, $self->websocket_engine );
                     }
                 );
