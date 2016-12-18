@@ -3,6 +3,7 @@ package WebSocketIOManager;
 use strict;
 use warnings;
 
+use utf8;
 use threads;
 use threads::shared;
 
@@ -43,7 +44,7 @@ sub process_websocket_data {
         }
         elsif ( $frame->is_text ) {
             $job =
-              $engine->process_text_data( $bytes, $client );
+              $engine->process_text_data( utf8::decode($bytes), $client );
         }
         elsif ( $frame->is_pong ) {
             $job = $engine->process_pong_data( $bytes, $client );
