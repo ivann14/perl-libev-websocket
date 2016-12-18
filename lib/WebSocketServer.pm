@@ -125,11 +125,6 @@ sub run_server {
                         WebSocketIOManager->new()
                           ->send_buffered_data_to_socket( $client,
                             $w_io->fh, $self->websocket_engine );
-
-			if ($self->clients_metadatas->{$client->id}) {
-				$self->clients_metadatas->{$client->id}->prepare_write_watcher->start;
-				$self->clients_metadatas->{$client->id}->write_watcher->stop;
-			}
                     }
                 );
 

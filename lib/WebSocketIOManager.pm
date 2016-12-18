@@ -64,11 +64,8 @@ sub process_websocket_data {
 sub send_buffered_data_to_socket {
     my ( $self, $client, $fh, $engine ) = @_;
     my $buf         = $client->write_buffer;
-    my $msg_to_send = $buf->dequeue_nb();
 
-    my $msg_to_send;
-
-	while (defined ($msg_to_send = eval { $buf->dequeue_nb() })){
+	while (defined (my $msg_to_send = eval { $buf->dequeue_nb() })){
 		if ($msg_to_send) {
 
 			syswrite ( $fh, $msg_to_send->get_data );

@@ -15,8 +15,6 @@ sub new {
         handshake     => $args{handshake}
           || Protocol::WebSocket::Handshake::Server->new(),
 	frame     => $args{frame},
-	prepare_watcher => $args{prepare_watcher},
-	client => $args{client},
     }, $class;
     return $self;
 }
@@ -51,26 +49,6 @@ sub frame {
     return $self->{frame};
 }
 
-sub prepare_write_watcher {
-    my ($self) = @_;
- 
-    if (not defined $self->{prepare_watcher}) {
-
-        my $start_write_watcher = $self->write_watcher->loop->prepare_ns (sub {
-		my ($this_watcher) = @_;
-
-		if ($self->{client}->write_buffer->peek) {
-			$self->write_watcher->start;
-			$this_watcher->stop;
-		}
-	});
-	
-	$self->{prepare_watcher} = $start_write_watcher;
-    }
-
-    return $self->{prepare_watcher};
-}
-
 1;
 __END__
 
@@ -102,5 +80,10 @@ Returns object responsible for checking if client's socket is readable.
 =item C<handshake>
 
 Returns object representing websocket handshake request.
+
+=item C<frame>
+
+Returns frame object, frame object contains bytes sent form client that will be stored in this object until there is enough bytes
+to build the whole WebSocket frame.
 
 =back
