@@ -20,9 +20,9 @@ sub read_from_socket {
 
     $size = $size || 1024;
     my $buffer;
-    sysread( $file_handle, $buffer, $size );
+    my $bytes_read = sysread( $file_handle, $buffer, $size );
 	
-    return $buffer;
+    return $buffer, $bytes_read;
 }
 
 sub process_websocket_data {

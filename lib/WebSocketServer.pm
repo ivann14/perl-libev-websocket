@@ -85,9 +85,16 @@ sub run_server {
                         }
 
                         my $io_manager = WebSocketIOManager->new();
-                        my $buffer = $io_manager->read_from_socket( $w_io->fh );
+                        my ($buffer, $bytes_read) = $io_manager->read_from_socket( $w_io->fh );
 
-                        if ($buffer) {
+			if (not defined $bytes_read) { print "Error while reading. \n" };
+			
+			# Client has shut down the connection for writing
+			if ($bytes_read == 0) {
+				WebSocketClientWriter->new->close_client_immediately ($client);
+			}
+
+                        if ($bytes_read > 1) {
 
                             # Change the time when the client was active for the last time
                             $client->set_last_active( time() );
