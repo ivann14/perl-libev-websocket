@@ -58,28 +58,25 @@ sub process_websocket_data {
 
 sub send_buffered_data_to_socket {
     my ( $client, $fh, $engine ) = @_;
-    my $buf         = $client->write_buffer;
 
-	while (defined (my $msg_to_send = eval { $buf->dequeue_nb() })){
-		if ($msg_to_send) {
+	if (defined (my $msg_to_send = $client->write_buffer->dequeue_nb() )){
 
-			syswrite ( $fh, $msg_to_send->get_data );
+		syswrite ( $fh, $msg_to_send->get_data );
 
-			if ( $msg_to_send->is_close ) {
-				$fh->close();
-				my $job : shared = shared_clone( {} );
-				$job = $engine->process_client_connection_is_closed($client);
-				ThreadWorkers::enqueue_job($job);
+		if ( $msg_to_send->is_close ) {
+			$fh->close();
+			my $job : shared = shared_clone( {} );
+			$job = $engine->process_client_connection_is_closed($client);
+			ThreadWorkers::enqueue_job($job);
 				
-				return;
-			}
-
-			if ( $msg_to_send->is_ping ) {
-				$client->set_pinged( time() );
-			}
-		} else {
-			$engine->close_client_or_keep_alive($client);
+			return;
 		}
+
+		if ( $msg_to_send->is_ping ) {
+			$client->set_pinged( time() );
+		}
+	} else {
+		$engine->close_client_or_keep_alive($client);
 	}
 }
 

@@ -73,7 +73,7 @@ sub send_pong_to_client {
 }
 
 sub close_client_immediately {
-    my ( $self, $client, $code, $reason ) = @_;
+    my ( $client, $code, $reason ) = @_;
     $client->empty_write_buffer();
     close_client( $client, $code, $reason );
 }
