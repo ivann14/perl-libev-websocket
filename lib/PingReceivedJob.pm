@@ -23,7 +23,7 @@ sub new {
 
 sub DoJob {
     my ($self) = @_;
-    WebSocketClientWriter->new->send_pong_to_client( $self->{client},
+    WebSocketClientWriter::send_pong_to_client( $self->{client},
         $self->{data} );
 }
 

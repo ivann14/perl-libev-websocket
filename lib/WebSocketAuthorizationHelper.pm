@@ -60,14 +60,13 @@ sub authorize_client {
                 $response =~ s/101/$status_code/;
             }
 
-            my $writer = WebSocketClientWriter->new;
-            $writer->send_handshake_response_to_client( $response, $client );
+            WebSocketClientWriter::send_handshake_response_to_client( $response, $client );
             $self->engine->clients_metadatas->{ $client->id }
               ->write_watcher->start;
 
             #Close connection if not authenticated or bad handshake, client should end the connection because of 401 status code or 400
             if ( !$authenticated || $bad_request ) {
-                $writer->close_client($client);
+                WebSocketClientWriter::close_client($client);
             }
         }
     }

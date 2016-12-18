@@ -91,7 +91,7 @@ sub run_server {
 			
 			# Client has shut down the connection for writing
 			if ($bytes_read == 0) {
-				WebSocketClientWriter->new->close_client_immediately ($client);
+				WebSocketClientWriter::close_client_immediately ($client);
 			}
 
                         if ($bytes_read > 1) {

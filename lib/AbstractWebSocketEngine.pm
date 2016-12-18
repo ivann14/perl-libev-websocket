@@ -87,7 +87,7 @@ sub process_ping_data {
 sub process_client_disconnecting {
     my ( $self, $client ) = @_;
 
-    WebSocketClientWriter->new->close_client($client);
+    WebSocketClientWriter::close_client($client);
 }
 
 sub process_client_connection_is_closed {
@@ -106,7 +106,7 @@ sub close_client_or_keep_alive {
     if ( defined $currentClient->pinged
         && ( $currentClient->pinged + $self->close_after_no_pong ) < time() )
     {
-        WebSocketClientWriter->new->close_client($currentClient);
+        WebSocketClientWriter::->close_client($currentClient);
     }
 
     if (
@@ -115,7 +115,7 @@ sub close_client_or_keep_alive {
             $self->ping_after_seconds_of_inactivity ) < time()
       )
     {
-        WebSocketClientWriter->new->ping_client($currentClient);
+        WebSocketClientWriter::->ping_client($currentClient);
     }
 }
 
