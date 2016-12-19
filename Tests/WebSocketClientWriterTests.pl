@@ -20,14 +20,7 @@ ok( $client->isa('WebSocketClient'), 'and it is the WebSocketClient class' );
 ok( $thread_safe_hash->add( $client->id(), $client ),
     'add client to thread safe hash' );
 
-my $writer = WebSocketClientWriter->new;
-ok( defined $writer, 'new returned something to variable' );
-ok(
-    $writer->isa('WebSocketClientWriter'),
-    'and it is the WebSocketClientWriter class'
-);
-
-ok( $writer->send_text_to_client( 'test message', $client ), 'writing to client' );
+ok( WebSocketClientWriter::send_text_to_client( 'test message', $client ), 'writing to client' );
 
 my $message;
 ok( $message = $client->write_buffer->dequeue(), 'checking client buffer' );
@@ -44,7 +37,7 @@ is( $result->next_bytes, 'test message', 'message with correct data was inserted
 my $client2 : shared = WebSocketClient->new( id => 6 );
 $thread_safe_hash->add( $client2->id, $client2 );
 
-ok( $writer->send_text_to_clients('test message to all', $thread_safe_hash), 'writing to all clients, two clients are in supplied hash' );
+ok( WebSocketClientWriter::send_text_to_clients('test message to all', $thread_safe_hash), 'writing to all clients, two clients are in supplied hash' );
 
 ok( $message = $client->write_buffer->dequeue(), 'checking first client\'s buffer' );
 ok( defined $message, 'buffer contains data' );
