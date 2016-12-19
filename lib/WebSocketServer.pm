@@ -87,12 +87,13 @@ sub run_server {
                         my ($buffer, $bytes_read) = WebSocketIOManager::read_from_socket( $w_io->fh );
 
 			if (not defined $bytes_read) { 
-				warn "Error while reading. \n" 
+				warn "Error while reading.\n" 
 			} elsif ($bytes_read == 0) {
 				# Client has shut down the connection for writing
 				WebSocketClientWriter::close_client_immediately ($client);
+				$self->clients_metadatas->{$client->id}->write_watcher->start;
 			} elsif ($bytes_read > 1) {
-
+				$self->clients_metadatas->{$client->id}->write_watcher->start;
                             # Change the time when the client was active for the last time
                             $client->set_last_active( time() );
 
@@ -125,9 +126,15 @@ sub run_server {
                         my ( $w_io, $revents ) = @_;
                         my $client = $self->get_client_by_id( $w_io->data );
 
-                        #Get message from client buffer and write
+                        # Get message from client buffer and write
                         WebSocketIOManager::send_buffered_data_to_socket( $client,
                             $w_io->fh, $self->websocket_engine );
+			
+			# Check if the client is not already deleted after sending the close frame
+			if ( $self->clients_metadatas->{$client->id}  && not defined $client->write_buffer->peek ) {				
+				$self->clients_metadatas->{$client->id}->prepare_write_watcher->start;
+				$self->clients_metadatas->{$client->id}->write_watcher->stop;
+			}
                     }
                 );
 
@@ -135,7 +142,6 @@ sub run_server {
             }
         }
     );
-
     $self->{loop}->run;
 }
 
