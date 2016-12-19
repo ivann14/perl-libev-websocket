@@ -91,9 +91,7 @@ sub run_server {
 			} elsif ($bytes_read == 0) {
 				# Client has shut down the connection for writing
 				WebSocketClientWriter::close_client_immediately ($client);
-				$self->clients_metadatas->{$client->id}->write_watcher->start;
 			} elsif ($bytes_read > 1) {
-				$self->clients_metadatas->{$client->id}->write_watcher->start;
                             # Change the time when the client was active for the last time
                             $client->set_last_active( time() );
 
