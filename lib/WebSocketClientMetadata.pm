@@ -15,6 +15,8 @@ sub new {
         handshake     => $args{handshake}
           || Protocol::WebSocket::Handshake::Server->new(),
 	frame     => $args{frame},
+	prepare_watcher => $args{prepare_watcher},
+ 	client => $args{client},
     }, $class;
     return $self;
 }
@@ -48,6 +50,26 @@ sub frame {
 
     return $self->{frame};
 }
+
+sub prepare_write_watcher {
+     my ($self) = @_;
+  
+     if (not defined $self->{prepare_watcher}) {
+ 
+        my $idle = $self->write_watcher->loop->idle (sub {
+		my ( $idle ) = @_;
+				
+		if ($self->{client}->write_buffer->peek) {
+			$idle->stop;
+			$self->write_watcher->start;
+		}
+	}); 	
+
+ 	$self->{prepare_watcher} = $idle;
+     }
+ 
+     return $self->{prepare_watcher};
+ }
 
 1;
 __END__

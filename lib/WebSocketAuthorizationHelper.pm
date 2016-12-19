@@ -84,6 +84,7 @@ sub remember_client {
         id            => $client_id,
         read_watcher  => $w_io_read,
         write_watcher => $w_io_write,
+	client        => $accepted_client
     );
 
     $self->engine->clients->add( $accepted_client->id, $accepted_client );
