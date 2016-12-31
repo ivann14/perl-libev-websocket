@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use lib '../lib';
+use strict;
 
 use FileHandle;
 use WebSocketIOManager;
@@ -17,31 +18,33 @@ sub new {
 
 sub process_text_data {
     my ( $self, $text, $client ) = @_;
-    return $text;
+    die  $text;
 };
 
 sub process_binary_data {
     my ( $self, $text, $client ) = @_;
-    return 24;
+    die  "bin";
 };
 
 sub process_pong_data {
     my ( $self, $text, $client ) = @_;
-    return $text;
+    die 'pong';
 };
 
 sub process_ping_data {
     my ( $self, $bytes, $client ) = @_;
-    return $bytes;
+    die 'ping';
 };
 
 sub process_client_disconnecting {
     my ( $self, $bytes, $client ) = @_;
-    return 42;
+    die 'close';
 };
 
 package tests;
-use Test::More tests => 8;
+use strict;
+use Test::More tests => 5;
+use Test::Exception;
 
 # Prepare data
 my $engine = FakeWebSocketEngine->new;
@@ -51,40 +54,40 @@ my $result;
 # Test processing websocket data
 # Text frame
 my $fh = FileHandle->new("DummyData/textFrame.dat", "r");
-my $data = WebSocketIOManager::read_from_socket($fh, undef);
-$frame = Protocol::WebSocket::Frame->new();
+my ($data, $bytes_read) = WebSocketIOManager::read_from_socket($fh, undef);
+my $frame = Protocol::WebSocket::Frame->new();
 $frame->append($data);
-is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
-   'processing websocket data with text frame, correct WebSocketEngine subroutine was called with correct input' );
+throws_ok (sub { WebSocketIOManager::process_websocket_data($engine, $frame, $client) }, '/Hello/',
+   'processing websocket data with text frame, correct WebSocketEngine subroutine was called with correct input');
 
 # Ping frame
 $fh = FileHandle->new("DummyData/pingFrame.dat", "r");
-$data = WebSocketIOManager::read_from_socket($fh, undef);
-$frame = Protocol::WebSocket::Frame->new();
-$frame->append($data);
-is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
-   'processing websocket data with ping frame, correct WebSocketEngine method was called with correct input' );
+($data, $bytes_read) = WebSocketIOManager::read_from_socket($fh, undef);
+my $frame1 = Protocol::WebSocket::Frame->new();
+$frame1->append($data);
+throws_ok (sub { WebSocketIOManager::process_websocket_data($engine, $frame1, $client) }, '/ping/',
+   'processing websocket data with text frame, correct WebSocketEngine subroutine was called with correct input');
 
 # Pong frame
 $fh = FileHandle->new("DummyData/pongFrame.dat", "r");
-$data = WebSocketIOManager::read_from_socket($fh, undef);
-$frame = Protocol::WebSocket::Frame->new();
-$frame->append($data);
-is( $io_manager->process_websocket_data($engine, $frame, $client), 'Hello',
-   'processing websocket data with pong frame, correct WebSocketEngine method was called with correct input' );
+($data, $bytes_read) = WebSocketIOManager::read_from_socket($fh, undef);
+my $frame2 = Protocol::WebSocket::Frame->new();
+$frame2->append($data);
+throws_ok (sub { WebSocketIOManager::process_websocket_data($engine, $frame2, $client) }, '/pong/',
+   'processing websocket data with text frame, correct WebSocketEngine subroutine was called with correct input');
 
 # Close frame
 $fh = FileHandle->new("DummyData/closeFrame.dat", "r");
-$data = WebSocketIOManager::read_from_socket($fh, undef);
-$frame = Protocol::WebSocket::Frame->new();
-$frame->append($data);
-is( $io_manager->process_websocket_data($engine, $frame, $client), 42,
-   'processing websocket data with close frame, correct WebSocketEngine method was called' );
+($data, $bytes_read) = WebSocketIOManager::read_from_socket($fh, undef);
+my $frame3 = Protocol::WebSocket::Frame->new();
+$frame3->append($data);
+throws_ok (sub { WebSocketIOManager::process_websocket_data($engine, $frame3, $client) }, '/close/',
+   'processing websocket data with text frame, correct WebSocketEngine subroutine was called with correct input');
 
 # Binary frame
 $fh = FileHandle->new("DummyData/binaryFrame.dat", "r");
-$data = WebSocketIOManager::read_from_socket($fh, undef);
-$frame = Protocol::WebSocket::Frame->new();
-$frame->append($data);
-is( $io_manager->process_websocket_data($engine, $frame, $client), 24,
-   'processing websocket data with binary frame, correct WebSocketEngine method was called' );
+($data, $bytes_read) = WebSocketIOManager::read_from_socket($fh, undef);
+my $frame4 = Protocol::WebSocket::Frame->new();
+$frame4->append($data);
+throws_ok (sub { WebSocketIOManager::process_websocket_data($engine, $frame4, $client) }, '/bin/',
+   'processing websocket data with text frame, correct WebSocketEngine subroutine was called with correct input');
