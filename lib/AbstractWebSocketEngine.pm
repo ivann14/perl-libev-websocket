@@ -241,6 +241,14 @@ Method for customization, that will be raised everytime the client is disconnect
 Can return instance of class derived from AbstractJob.
 Contains default implementation.
 
+=item C<on_after_read>
+
+Method for customization, that will be raised everytime the data are successfully read from client's socket.
+
+=item C<on_after_write>
+
+Method for customization, that will be raised everytime after the client's socket was ready for writing.
+
 
 =back
 
