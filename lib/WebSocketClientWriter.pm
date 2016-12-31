@@ -63,7 +63,7 @@ sub ping_client {
     }
 	
     my $text = $data || 'ping';
-    my $message_to_send = WebSocketMessage->new( buffer => $text, type => 'ping' );
+    my $message = WebSocketMessage->new( buffer => $text, type => 'ping' );
     
     enqueue_message_for_client( $client, $message, 1);
 }
@@ -73,7 +73,7 @@ sub send_pong_to_client {
     my ( $client, $text ) = @_;
 
     my $message = WebSocketMessage->new( buffer => $text, type => 'pong' );
-    $client->write_buffer->insert( 0, $message );
+    enqueue_message_for_client( $client, $message, 1);
 }
 
 sub close_client_immediately {
