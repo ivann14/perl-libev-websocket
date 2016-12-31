@@ -238,8 +238,7 @@ Takes 2 parameters. Handshake request and websocket client.
 =item C<process_client_connection_is_closed>
 
 Method for customization, that will be raised everytime the client is disconnected from the server. 
-Can return instance of class derived from AbstractJob.
-Contains default implementation.
+Contains default implementation. If customizing, then it is recommended to call this method.
 
 =item C<on_after_read>
 
