@@ -57,10 +57,10 @@ sub prepare_write_watcher {
      if (not defined $self->{prepare_watcher}) {
  
         my $idle = $self->write_watcher->loop->idle (sub {
-		my ( $idle ) = @_;
+		my ( $this_watcher ) = @_;
 				
 		if ($self->{client}->write_buffer->peek) {
-			$idle->stop;
+			$this_watcher->stop;
 			$self->write_watcher->start;
 		}
 	}); 	

@@ -27,6 +27,7 @@ sub new {
         clients_metadatas => $args{clients_metadatas} || {},
         number_of_thread_workers => $args{number_of_thread_workers} || 0,
         loop => $args{loop} || EV::default_loop,
+	prefer_read => $args{prefer_read} || 0,
     }, $class;
 
     $self->websocket_engine->set_loop( $self->{loop} );
