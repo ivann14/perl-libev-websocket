@@ -57,6 +57,7 @@ sub get_client_by_id {
     return $self->clients->get_value($client_id);
 }
 
+
 sub run_server {
     my ($self) = shift;
 
@@ -87,11 +88,13 @@ sub run_server {
 
                         my ($buffer, $bytes_read) = WebSocketIOManager::read_from_socket( $w_io->fh );
 
-			if (not defined $bytes_read) { 
-				warn "Error while reading.\n" 
+			if (not defined $bytes_read) {
+				$self->{websocket_engine}->process_client_connection_is_closed($client, $w_io->fh);
+				return;
 			} elsif ($bytes_read == 0) {
-				# Client has shut down the connection for writing
+				#Client has shut down the connection for writing
 				WebSocketClientWriter::close_client_immediately ($client);
+				return;
 			} elsif ($bytes_read > 1) {
                             # Change the time when the client was active for the last time
                             $client->set_last_active( time() );
@@ -103,10 +106,9 @@ sub run_server {
     				my $frame = $self->clients_metadatas->{$client->id}->frame;
 				$frame->append($buffer);
 
-                                my $job = WebSocketIOManager::process_websocket_data( $self->websocket_engine, $frame, $client );
-                                if ($job) {
-                                    ThreadWorkers::enqueue_job($job);
-                                }
+                                WebSocketIOManager::process_websocket_data( $self->websocket_engine, $frame, $client );
+                                
+				$self->{websocket_engine}->on_after_read($client);
                             }
                             else {
                                 # Authorize him first
@@ -130,10 +132,16 @@ sub run_server {
                             $w_io->fh, $self->websocket_engine );
 			
 			# Check if the client is not already deleted after sending the close frame
-			if ( $self->clients_metadatas->{$client->id}  && not defined $client->write_buffer->peek ) {				
-				$self->clients_metadatas->{$client->id}->prepare_write_watcher->start;
-				$self->clients_metadatas->{$client->id}->write_watcher->stop;
+			if ($self->clients_metadatas->{$client->id}) {
+
+				if ( $self->{prefer_read}  && not defined $client->write_buffer->peek ) {	
+			
+					$self->clients_metadatas->{$client->id}->prepare_write_watcher->start;
+					$self->clients_metadatas->{$client->id}->write_watcher->stop;
+				}
 			}
+
+			$self->{websocket_engine}->on_after_write($client);
                     }
                 );
 

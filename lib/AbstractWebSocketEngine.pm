@@ -67,6 +67,14 @@ sub process_binary_data {
     my ( $self, $data, $client ) = @_;
 }
 
+sub on_after_read {
+    my ( $self, $client ) = @_;
+}
+
+sub on_after_write {
+    my ( $self, $client ) = @_;
+}
+
 sub process_pong_data {
     my ( $self, $data, $client ) = @_;
 
@@ -91,11 +99,14 @@ sub process_client_disconnecting {
 }
 
 sub process_client_connection_is_closed {
-    my ( $self, $client ) = @_;
+    my ( $self, $client, $fh) = @_;
+    
+    $fh->close;
 
     # Stop watchers, so the pending events are destroyed
     $self->clients_metadatas->{ $client->id }->write_watcher->stop;
     $self->clients_metadatas->{ $client->id }->read_watcher->stop;
+    $self->clients_metadatas->{ $client->id }->prepare_write_watcher->stop;
 
     delete $self->clients_metadatas->{ $client->id };
     $self->clients->remove( $client->id );

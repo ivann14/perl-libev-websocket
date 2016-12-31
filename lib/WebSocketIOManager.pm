@@ -20,6 +20,7 @@ sub read_from_socket {
     return $buffer, $bytes_read;
 }
 
+
 sub process_websocket_data {
     my ( $engine, $frame, $client ) = @_;
 
@@ -50,11 +51,12 @@ sub process_websocket_data {
             $job = $engine->process_client_disconnecting($client);
         }
         
-        return $job;
+        if ($job) {
+	    ThreadWorkers::enqueue_job($job);
+	}
     }
-    
-    return undef;
 }
+
 
 sub send_buffered_data_to_socket {
     my ( $client, $fh, $engine ) = @_;
@@ -64,12 +66,7 @@ sub send_buffered_data_to_socket {
 		syswrite ( $fh, $msg_to_send->get_data );
 
 		if ( $msg_to_send->is_close ) {
-			$fh->close();
-			my $job : shared = shared_clone( {} );
-			$job = $engine->process_client_connection_is_closed($client);
-			ThreadWorkers::enqueue_job($job);
-				
-			return;
+			$engine->process_client_connection_is_closed($client, $fh);
 		}
 
 		if ( $msg_to_send->is_ping ) {
