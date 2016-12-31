@@ -38,17 +38,21 @@ sub send_handshake_response_to_client {
 }
 
 sub enqueue_message_for_client {
-    my ( $client, $message ) = @_;
+    my ( $client, $message, $immediately ) = @_;
 
     unless ( defined $client ) {
-        die "WebSocketClient was not supplied.";
+        die "WebSocketClient was not supplied.\n";
     }
 
     unless ( defined $message ) {
-        die "WebSocket frame was not supplied.";
+        die "WebSocket frame was not supplied.\n";
     }
 
-    $client->write_buffer->enqueue($message);
+    if ($immediately) {
+	$client->write_buffer->insert( 0, $message ) ;
+    }else{
+        $client->write_buffer->enqueue($message);
+    }
 }
 
 sub ping_client {
@@ -61,7 +65,7 @@ sub ping_client {
     my $text = $data || 'ping';
     my $message_to_send = WebSocketMessage->new( buffer => $text, type => 'ping' );
     
-    $client->write_buffer->insert( 0, $message_to_send );
+    enqueue_message_for_client( $client, $message, 1);
 }
 
 
@@ -74,8 +78,17 @@ sub send_pong_to_client {
 
 sub close_client_immediately {
     my ( $client, $code, $reason ) = @_;
-    $client->empty_write_buffer();
-    close_client( $client, $code, $reason );
+
+    $client->set_closing(1);
+
+    $code   = $code   || 1000;
+    $reason = $reason || '';
+
+    my $data = pack( "na*", $code, $reason );
+    my $type = { close => $data };
+    my $message = WebSocketMessage->new( buffer => $data, type => 'close' );
+
+    enqueue_message_for_client( $client, $message, 1);
 }
 
 sub close_client {
