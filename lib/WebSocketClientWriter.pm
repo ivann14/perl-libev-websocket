@@ -11,7 +11,6 @@ sub send_text_to_client {
     my $message = WebSocketMessage->new( buffer => $text, type => 'text' );
     enqueue_message_for_client( $client, $message );
 
-    return 1;
 }
 
 sub send_text_to_clients {

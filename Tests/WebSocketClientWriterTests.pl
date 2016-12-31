@@ -2,7 +2,7 @@
 
 use lib '../lib';
 
-use Test::More tests => 20;
+use Test::More tests => 23;
 use threads;
 use threads::shared;
 use WebSocketClient;
@@ -20,7 +20,7 @@ ok( $client->isa('WebSocketClient'), 'and it is the WebSocketClient class' );
 ok( $thread_safe_hash->add( $client->id(), $client ),
     'add client to thread safe hash' );
 
-ok( WebSocketClientWriter::send_text_to_client( 'test message', $client ), 'writing to client' );
+WebSocketClientWriter::send_text_to_client( 'test message', $client ); print "Writing to client.\n";
 
 my $message;
 ok( $message = $client->write_buffer->dequeue(), 'checking client buffer' );
@@ -37,7 +37,7 @@ is( $result->next_bytes, 'test message', 'message with correct data was inserted
 my $client2 : shared = WebSocketClient->new( id => 6 );
 $thread_safe_hash->add( $client2->id, $client2 );
 
-ok( WebSocketClientWriter::send_text_to_clients('test message to all', $thread_safe_hash), 'writing to all clients, two clients are in supplied hash' );
+WebSocketClientWriter::send_text_to_clients('test message to all', $thread_safe_hash); print "Writing to all clients.\n";
 
 ok( $message = $client->write_buffer->dequeue(), 'checking first client\'s buffer' );
 ok( defined $message, 'buffer contains data' );
@@ -63,3 +63,36 @@ $result = Protocol::WebSocket::Frame->new;
 $result->append($message2->get_data);
 is( $result->next_bytes, 'test message to all', 'message with correct data was inserted into second client\'s buffer' );
 
+my $client3 = WebSocketClient->new( id => 14 );
+WebSocketClientWriter::send_text_to_client( 'test message', $client3 );
+WebSocketClientWriter::send_text_to_client( 'test message', $client3 );
+print "Writing to client twice text.\n";
+
+print "Pinging client.\n";
+WebSocketClientWriter::ping_client( $client3, 'pingtest' );
+ok( $client3->write_buffer->peek->is_ping, 'first message is ping' );
+
+print "Send pong to client.\n";
+WebSocketClientWriter::send_pong_to_client( $client3, 'pongtest' );
+ok( $client3->write_buffer->peek->is_pong, 'first message is pong' );
+
+print "Send close to client.\n";
+WebSocketClientWriter::close_client( $client3, 1000 );
+ok( $client3->write_buffer->peek->is_pong, 'first message is not close' );
+
+print "Send close immediately to client.\n";
+WebSocketClientWriter::close_client_immediately( $client3, 1000 );
+ok( $client3->write_buffer->peek->is_close, 'first message is close' );
+
+print "Enqueue message.\n";
+WebSocketClientWriter::enqueue_message_for_client( $client3, "message" );
+ok( $client3->write_buffer->peek->is_close, 'first message is still close' );
+
+print "Enqueue message to first place.\n";
+WebSocketClientWriter::enqueue_message_for_client( $client3, "message", 1 );
+is( $client3->write_buffer->peek, "message", 'first message correctly inserted' );
+
+print "Enqueue handshake.\n";
+$client3->empty_write_buffer;
+WebSocketClientWriter::send_handshake_response_to_client( "message", $client3 );
+ok( $client3->write_buffer->peek->is_handshake, 'message is handshake' );
