@@ -140,9 +140,11 @@ sub run_server {
 					$self->clients_metadatas->{$client->id}->prepare_write_watcher->start;
 					$self->clients_metadatas->{$client->id}->write_watcher->stop;
 				}
+				
+				
+				$self->{websocket_engine}->on_after_write($client);
 			}
 
-			$self->{websocket_engine}->on_after_write($client);
                     }
                 );
 
