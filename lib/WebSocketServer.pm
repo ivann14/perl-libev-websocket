@@ -28,6 +28,7 @@ sub new {
         number_of_thread_workers => $args{number_of_thread_workers} || 0,
         loop => $args{loop} || EV::default_loop,
 	prefer_read => $args{prefer_read} || 0,
+	read_size => $args{read_size} || 2048,
     }, $class;
 
     $self->websocket_engine->set_loop( $self->{loop} );
@@ -86,7 +87,7 @@ sub run_server {
                             return;
                         }
 
-                        my ($buffer, $bytes_read) = WebSocketIOManager::read_from_socket( $w_io->fh );
+                        my ($buffer, $bytes_read) = WebSocketIOManager::read_from_socket( $w_io->fh, $self->{read_size});
 
 			if (not defined $bytes_read) {
 				$self->{websocket_engine}->process_client_connection_is_closed($client, $w_io->fh);
@@ -205,6 +206,10 @@ Returns WebSocketClient by given id.
 =item C<prefer_read>
 
 Increases the number of clients that server can accept in high volume traffic, but also increases the time of the server response to client.
+
+=item C<read_size>
+
+Indicates how many bytes of data should be read from client's socket. Default is 2048.
 
 =item C<run_server>
 

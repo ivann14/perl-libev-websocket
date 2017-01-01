@@ -13,7 +13,7 @@ use Protocol::WebSocket;
 sub read_from_socket {
     my ( $file_handle, $size ) = @_;
 
-    $size = $size || 1024;
+    $size = $size || 2048;
     my $buffer;
     my $bytes_read = sysread( $file_handle, $buffer, $size );
 	
@@ -52,8 +52,8 @@ sub process_websocket_data {
         }
         
         if ($job) {
-	    ThreadWorkers::enqueue_job($job);
-	}
+			ThreadWorkers::enqueue_job($job);
+		}
     }
 }
 
@@ -62,8 +62,9 @@ sub send_buffered_data_to_socket {
     my ( $client, $fh, $engine ) = @_;
 
 	if (defined (my $msg_to_send = $client->write_buffer->dequeue_nb() )){
-
-		syswrite ( $fh, $msg_to_send->get_data );
+	
+		# If client has shutted down the connection 
+		syswrite ( $fh, $msg_to_send->get_data ) || $engine->process_client_connection_is_closed($client, $fh);;
 
 		if ( $msg_to_send->is_close ) {
 			$engine->process_client_connection_is_closed($client, $fh);
