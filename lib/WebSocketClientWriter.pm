@@ -78,20 +78,11 @@ sub send_pong_to_client {
 sub close_client_immediately {
     my ( $client, $code, $reason ) = @_;
 
-    $client->set_closing(1);
-
-    $code   = $code   || 1000;
-    $reason = $reason || '';
-
-    my $data = pack( "na*", $code, $reason );
-    my $type = { close => $data };
-    my $message = WebSocketMessage->new( buffer => $data, type => 'close' );
-
-    enqueue_message_for_client( $client, $message, 1);
+    close_client( $client, $code, $reason, 1);
 }
 
 sub close_client {
-    my ( $client, $code, $reason ) = @_;
+    my ( $client, $code, $reason, $immediately ) = @_;
 
     $client->set_closing(1);
 
@@ -102,7 +93,7 @@ sub close_client {
     my $type = { close => $data };
     my $message = WebSocketMessage->new( buffer => $data, type => 'close' );
 
-    enqueue_message_for_client( $client, $message );
+    enqueue_message_for_client( $client, $message, $immediately );
 }
 
 1;
