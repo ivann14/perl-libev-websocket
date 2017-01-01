@@ -73,7 +73,7 @@ sub run_server {
             my $connection = $self->{socket}->accept();
             if ($connection) {
 
-                # When client connects, create event that listens
+                # If  client connects, create event that listens
                 my $w_io_read = $self->{loop}->io_ns(
                     $connection,
                     EV::READ,
@@ -92,7 +92,7 @@ sub run_server {
 				$self->{websocket_engine}->process_client_connection_is_closed($client, $w_io->fh);
 				return;
 			} elsif ($bytes_read == 0) {
-				#Client has shut down the connection for writing
+				# Client has shut down the connection for writing
 				WebSocketClientWriter::close_client_immediately ($client);
 				return;
 			} elsif ($bytes_read > 1) {
@@ -201,6 +201,10 @@ Returns hash with metadatas about currently connected WebSocket clients.
 =item C<get_client_by_id>
 
 Returns WebSocketClient by given id. 
+
+=item C<prefer_read>
+
+Increases the number of clients that server can accept in high volume traffic, but also increases the time of the server response to client.
 
 =item C<run_server>
 
