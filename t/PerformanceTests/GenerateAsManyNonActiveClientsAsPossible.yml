@@ -1,0 +1,31 @@
+{
+  "config": {
+      "target": "ws://127.0.0.1:2222/",
+       "phases": [
+      {"duration": 420, "arrivalRate":60},
+    ],
+      "ws": {
+        "rejectUnauthorized": false
+      }
+  },
+  "scenarios": [
+    {
+      "engine": "ws",
+      "flow": [
+        {"think": 420},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+        {"send": "hello"},{"think": "5"},
+      ]
+    }
+  ]
+}

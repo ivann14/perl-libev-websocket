@@ -1,0 +1,42 @@
+{
+  "config": {
+      "target": "ws://127.0.0.1:2222/",
+       "phases": [
+      {"duration": 120, "arrivalRate": 65},
+    ],
+      "ws": {
+        "rejectUnauthorized": false
+      }
+  },
+  "scenarios": [
+    {
+      "engine": "ws",
+      "flow": [
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+        {"send": "hello"},{"think": 10},{"send": "hello"},
+      ]
+    }
+  ]
+}
