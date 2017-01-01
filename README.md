@@ -4,35 +4,35 @@ This server enables programmers to create applications based on WebSocket protoc
 
 # Synopsis
 
-package WebSocketEngine;
-
-use parent 'AbstractWebSocketEngine';
-
-sub process_text_data {
-    my ( $self, $text, $client ) = @_;
-
-    WebSocketClientWriter::send_text_to_client( $text, $client );
-}
-
-package EchoServer;
-
-my $socket = IO::Socket::INET->new(
-    Proto     => "tcp",
-    LocalPort => $port,
-    LocalHost => $ip,
-    Listen    => SOMAXCONN,
-    Reuse     => 1,
-    Type      => SOCK_STREAM,
-    Blocking  => 0,
-);
-
-WebSocketServer->new(
-    socket           => $socket,
-    websocket_engine => WebSocketEngine->new(
-        close_after_no_pong              => 100,
-        ping_after_seconds_of_inactivity => 60
-    ),
-)->run_server();
+    package WebSocketEngine;
+    
+    use parent 'AbstractWebSocketEngine';
+    
+    sub process_text_data {
+        my ( $self, $text, $client ) = @_;
+    
+        WebSocketClientWriter::send_text_to_client( $text, $client );
+    }
+    
+    package EchoServer;
+    
+    my $socket = IO::Socket::INET->new(
+        Proto     => "tcp",
+        LocalPort => $port,
+        LocalHost => $ip,
+        Listen    => SOMAXCONN,
+        Reuse     => 1,
+        Type      => SOCK_STREAM,
+        Blocking  => 0,
+    );
+    
+    WebSocketServer->new(
+        socket           => $socket,
+        websocket_engine => WebSocketEngine->new(
+            close_after_no_pong              => 100,
+            ping_after_seconds_of_inactivity => 60
+        ),
+    )->run_server();
 
 # Description
 
