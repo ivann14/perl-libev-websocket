@@ -10,7 +10,7 @@ use parent 'AbstractWebSocketEngine';
 sub process_text_data {
     my ( $self, $text, $client ) = @_;
 
-    WebSocketClientWriter::send_text_to_client( $self->{data}, $self->{client} );
+    WebSocketClientWriter::send_text_to_client( $text, $client );
 }
 
 sub on_after_write {
