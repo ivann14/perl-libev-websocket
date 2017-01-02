@@ -6,18 +6,11 @@ use warnings;
 use lib '../../lib';
 
 use parent 'AbstractWebSocketEngine';
-use ReadJob;
-
-sub new {
-    my $class = shift;
-
-    return $class->SUPER::new(@_);
-}
 
 sub process_text_data {
     my ( $self, $text, $client ) = @_;
 
-    return ReadJob->new( data => $text, client => $client );
+    WebSocketClientWriter::send_text_to_client( $self->{data}, $self->{client} );
 }
 
 sub on_after_write {
