@@ -16,6 +16,7 @@ sub new {
           || Protocol::WebSocket::Handshake::Server->new(),
 	frame     => $args{frame},
 	prepare_watcher => $args{prepare_watcher},
+	ping_watcher => $args{ping_watcher},
  	client => $args{client},
     }, $class;
     return $self;
@@ -69,7 +70,13 @@ sub prepare_write_watcher {
      }
  
      return $self->{prepare_watcher};
- }
+}
+
+sub ping_watcher {
+     my ($self) = @_;
+ 
+     return $self->{ping_watcher};
+}
 
 1;
 __END__
@@ -95,9 +102,17 @@ String representation of GUID is used by default.
 
 Returns object responsible for checking if client's socket is writeable.
 
-=item C<write_watcher>
+=item C<read_watcher>
 
 Returns object responsible for checking if client's socket is readable.
+
+=item C<ping_watcher>
+
+Returns object responsible for checking if ping message needs to be sent to client.
+
+=item C<prepare_write_watcher>
+
+Returns object responsible for starting client's write watcher, if there is something to write.
 
 =item C<handshake>
 

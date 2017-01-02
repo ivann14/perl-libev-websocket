@@ -105,26 +105,27 @@ sub process_client_connection_is_closed {
     $self->clients_metadatas->{ $client->id }->write_watcher->stop;
     $self->clients_metadatas->{ $client->id }->read_watcher->stop;
     $self->clients_metadatas->{ $client->id }->prepare_write_watcher->stop;
+    $self->clients_metadatas->{ $client->id }->ping_watcher->stop;
 
     delete $self->clients_metadatas->{ $client->id };
     $self->clients->remove( $client->id );
 }
 
 sub close_client_or_keep_alive {
-    my ( $self, $currentClient ) = @_;
-    if ( defined $currentClient->pinged
-        && ( $currentClient->pinged + $self->close_after_no_pong ) < time() )
+    my ( $self, $current_client ) = @_;
+    if ( defined $current_client->pinged
+        && ( $current_client->pinged + $self->close_after_no_pong ) < time() )
     {
-        WebSocketClientWriter::->close_client($currentClient);
+        WebSocketClientWriter::close_client($current_client);
     }
 
     if (
-        !$currentClient->pinged
-        && ( $currentClient->last_active +
+        !$current_client->pinged
+        && ( $current_client->last_active +
             $self->ping_after_seconds_of_inactivity ) < time()
       )
     {
-        WebSocketClientWriter::->ping_client($currentClient);
+        WebSocketClientWriter::ping_client($current_client);
     }
 }
 

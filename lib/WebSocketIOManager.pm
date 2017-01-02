@@ -73,8 +73,6 @@ sub send_buffered_data_to_socket {
 		if ( $msg_to_send->is_ping ) {
 			$client->set_pinged( time() );
 		}
-	} else {
-		$engine->close_client_or_keep_alive($client);
 	}
 }
 

@@ -48,7 +48,7 @@ sub authorize_client {
                 $authenticated =
                   $self->engine->authenticate_client( $client, $request );
 
-                #If not authenticated set response status to 401
+                # If not authenticated set response status to 401
                 if ( !$authenticated ) {
                     $status_code = 401;
                 }
@@ -62,9 +62,11 @@ sub authorize_client {
 
             WebSocketClientWriter::send_handshake_response_to_client( $response, $client );
             $self->engine->clients_metadatas->{ $client->id }
-              ->write_watcher->start;
+              ->write_watcher->start
+            $self->engine->clients_metadatas->{ $client->id }
+              ->ping_watcher->start;
 
-            #Close connection if not authenticated or bad handshake, client should end the connection because of 401 status code or 400
+            # Close connection if not authenticated or bad handshake, client should end the connection because of 401 status code or 400
             if ( !$authenticated || $bad_request ) {
                 WebSocketClientWriter::close_client($client);
             }
@@ -79,12 +81,20 @@ sub remember_client {
     $w_io_read->data($client_id);
     $w_io_write->data($client_id);
 
+    my $ping_time = $self->{engine}->{ping_after_seconds_of_inactivity};
+    my $ping_watcher = $self->{engine}->{loop}->timer_ns ($ping_time, $ping_time, sub {
+		my ($w) = @_;
+		$self->{engine}->close_client_or_keep_alive($self->{engine}->{clients}->get_value($w->data));
+	});
+    $ping_watcher->data( $client_id );
+
     my $accepted_client = WebSocketClient->new( id => $client_id );
     my $accepted_client_metadata = WebSocketClientMetadata->new(
         id            => $client_id,
         read_watcher  => $w_io_read,
         write_watcher => $w_io_write,
-	client        => $accepted_client
+        client        => $accepted_client,
+        ping_watcher  => $ping_watcher
     );
 
     $self->engine->clients->add( $accepted_client->id, $accepted_client );
