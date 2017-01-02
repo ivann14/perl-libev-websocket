@@ -43,9 +43,9 @@ documentation inside AbstractWebSocketEngine.
 
 # Examples
 
-Contains two applications to show basic possibilities of the library.
+Folder contains two applications to show basic possibilities of the library.
 Firstly you can see Echo server that echoes client's messages. In the WebSocketEngine class you can see performance optimization by
-starting and stoping libev's watcher objects.
+starting and stopping libev's watcher objects.
 In the Chat application you can see the usage of the worker thread, because iterating through all connected clients may block the event loop
 and decrease performance of the application.
 
