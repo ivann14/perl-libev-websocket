@@ -204,7 +204,6 @@ Can return instance of class derived from AbstractJob.
 Method for customization, that will be raised after receiving binary frame from the client. Binary data and WebSocketClient instance are supplied as parameters.
 Can return instance of class derived from AbstractJob.
 
-
 =item C<process_pong_data>
 
 Method for customization, that will be raised after receiving pong frame from the client. Data from pong frame and WebSocketClient instance are supplied as parameters.
@@ -247,7 +246,6 @@ Method for customization, that will be raised everytime the data are successfull
 =item C<on_after_write>
 
 Method for customization, that will be raised everytime after the client's socket was ready for writing.
-
 
 =back
 
