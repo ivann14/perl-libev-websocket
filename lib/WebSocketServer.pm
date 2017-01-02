@@ -93,7 +93,7 @@ sub run_server {
 				$self->{websocket_engine}->process_client_connection_is_closed($client, $w_io->fh);
 				return;
 			} elsif ($bytes_read == 0) {
-				# Client has shut down the connection for writing
+				# Client has sent EOF
 				WebSocketClientWriter::close_client_immediately ($client);
 				return;
 			} elsif ($bytes_read > 1) {
