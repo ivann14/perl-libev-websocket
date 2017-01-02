@@ -4,7 +4,7 @@ This server enables programmers to create applications based on WebSocket protoc
 
 # Synopsis
 
-    package WebSocketEngine;
+    package EchoEngine;
     
     use parent 'AbstractWebSocketEngine';
     
