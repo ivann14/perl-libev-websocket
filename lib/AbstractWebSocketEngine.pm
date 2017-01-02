@@ -3,7 +3,6 @@ package AbstractWebSocketEngine;
 use strict;
 use warnings;
 
-use PingReceivedJob;
 use WebSocketClient;
 use WebSocketClientMetadata;
 
@@ -88,8 +87,7 @@ sub process_pong_data {
 sub process_ping_data {
     my ( $self, $data, $client ) = @_;
 
-    my $job = PingReceivedJob->new( data => $data, client->$client );
-    return $job;
+    WebSocketClientWriter::send_pong_to_client( $self->{client}, $self->{data} );
 }
 
 sub process_client_disconnecting {
