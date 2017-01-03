@@ -20,7 +20,7 @@ sub new {
 		}, $class;
 	} else {
 		my $frame = Protocol::WebSocket::Frame->new( buffer => $args{buffer}, type => $args{type} );
-		$frame->fin( $args{is_final_part} || 1 );
+		$frame->fin( $args{is_final_part} );
 	
 		$self = bless { 
 			frame => $args{frame} || $frame

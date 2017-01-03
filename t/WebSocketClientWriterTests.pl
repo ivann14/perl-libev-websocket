@@ -5,7 +5,7 @@ use lib '../lib';
 use strict;
 use warnings;
 
-use Test::More tests => 26;
+use Test::More tests => 28;
 use threads;
 use threads::shared;
 use WebSocketClient;
@@ -73,11 +73,18 @@ WebSocketClientWriter::send_binary_to_client( $data, $client3 );
 ok( $client3->write_buffer->peek->is_binary, 'first message is binary' );
 
 $client3->empty_write_buffer;
+print "Sending text fragment to client.\n";
+WebSocketClientWriter::send_text_to_client( 'test', $client3, 0 );
+$client3->write_buffer->peek->get_data;
+ok( $client3->write_buffer->peek->is_text, 'fragment is text' );
+is( $client3->write_buffer->peek->is_final_part, 0, 'message is not final part of continuation frames' );
+
+$client3->empty_write_buffer;
 print "Sending continuation to client.\n";
-my $data = "\x20" x 100;
-WebSocketClientWriter::send_continuation_to_client( $data, $client3, 0 );
+my $data1 = "\x20" x 100;
+WebSocketClientWriter::send_continuation_to_client( $data1, $client3, 0 );
 ok( $client3->write_buffer->peek->is_continuation, 'message is continuation' );
-not ok( $client3->write_buffer->peek->is_final_part, 'message is final part of continuation frames' );
+is( $client3->write_buffer->peek->is_final_part, 0, 'message is not final part of continuation frames' );
 
 WebSocketClientWriter::send_text_to_client( 'test message', $client3 );
 WebSocketClientWriter::send_text_to_client( 'test message', $client3 );
