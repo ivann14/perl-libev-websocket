@@ -131,11 +131,13 @@ WebSocketMessage - WebSocket message
 
 =head1 SYNOPSIS
 
-	my $message = WebSocketMessage->new ("text", "text message for client");
-	my $message = WebSocketMessage->new ("ping", "ping message for client");
-	my $message = WebSocketMessage->new ("pong", "pong response for client");
-	my $message = WebSocketMessage->new ("close", "close code and reason");
-	my $message = WebSocketMessage->new ("handshake", "websocket response handshake");
+	my $message = WebSocketMessage->new ( type => "text", buffer => "text message for client" );
+	my $message = WebSocketMessage->new ( type => "ping", buffer => "ping message for client" );
+	my $message = WebSocketMessage->new ( type => "pong", buffer => "pong response for client" );
+	my $message = WebSocketMessage->new ( type => "close", buffer => "close code and reason" );
+	my $message = WebSocketMessage->new ( type => "handshake", buffer => "websocket response handshake" );
+	my $message = WebSocketMessage->new ( type => "binary", buffer => $data );
+	my $message = WebSocketMessage->new ( type => "continuation", buffer => "data", is_final_part => 0) ;
 	my $data_to_be_sent_for_client = $message->get_data();
 
 =head1 DESCRIPTION
@@ -173,5 +175,13 @@ Returns true if message is type of text.
 =item C<is_close>
 
 Returns true if message is type of close.
+
+=item C<is_continuation>
+
+Returns true if message is type of continuation.
+
+=item C<is_binary>
+
+Returns true if message is type of binary.
 
 =back
