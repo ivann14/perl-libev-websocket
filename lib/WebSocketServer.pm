@@ -3,19 +3,21 @@ package WebSocketServer;
 use strict;
 use warnings;
 
-use 5.018;
+
 use threads;
 use threads::shared;
+
 use EV;
 use Protocol::WebSocket;
+
 use WebSocketClient;
 use WebSocketClientMetadata;
 use AbstractWebSocketEngine;
 use WebSocketIOManager;
 use WebSocketAuthorizationHelper;
+use WebSocketClientMetadata;
 use ThreadSafeHash;
 use ThreadWorkers;
-use WebSocketClientMetadata;
 
 sub new {
     my ( $class, %args ) = @_;
