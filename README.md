@@ -2,6 +2,15 @@
 
 This server enables programmers to create applications based on WebSocket protocol without deeper knowledge of the WebSocket protocol.
 
+# Description
+
+To create application based on this library, you need to check the documentation of the WebSocketServer module and AbstractWebSocketEngine module.
+Then you need to implement your own class derived from AbstractWebSocketEngine.
+You can override almost all the methods from the AbstractWebSocketEngine class. To know which methods to override and what effect they will have on your application you need to check 
+documentation inside AbstractWebSocketEngine.
+
+For CPU-bound actions you should have multi-core server. Then create classes that derives from AbstractJob class which will be returned by your Engine class.
+
 # Synopsis
     
     package CpuBoundJob;
@@ -53,15 +62,6 @@ This server enables programmers to create applications based on WebSocket protoc
         ),
 		thread_workers   => 0
     )->run_server();
-
-# Description
-
-To create application based on this library, you need to check the documentation of the WebSocketServer module and AbstractWebSocketEngine module.
-Then you need to implement your own class derived from AbstractWebSocketEngine.
-You can override almost all the methods from the AbstractWebSocketEngine class. To know which methods to override and what effect they will have on your application you need to check 
-documentation inside AbstractWebSocketEngine.
-
-For CPU-bound actions you should have multi-core server. Then create classes that derives from AbstractJob class which will be returned by your Engine class.
 
 # Examples
 
