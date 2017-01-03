@@ -11,6 +11,8 @@ documentation inside AbstractWebSocketEngine.
 
 For CPU-bound actions you should have multi-core server. Then create classes that derives from AbstractJob class which will be returned by your Engine class.
 
+To send various kinds of WebSocket messages you should use WebSocketClientWriter class.
+
 # Synopsis
     
     package CpuBoundJob;
@@ -67,7 +69,7 @@ For CPU-bound actions you should have multi-core server. Then create classes tha
 
 Folder contains two applications to show basic possibilities of the library.
 Firstly you can see Echo server that echoes client's messages. In the WebSocketEngine class you can see performance optimization by
-starting and stopping libev's watcher objects.
-In the Chat application you can see the usage of the worker thread, because iterating through all connected clients may block the event loop
-and decrease performance of the application.
+starting and stopping libev's watcher objects. Commented code serves as an example of how to use WebSocket fragments to divide really long messages into smaller pieces.
+
+In the Chat application you can see the usage of the worker thread, because iterating through all connected clients may block the event loop and decrease performance of the application. As well as prefer_read optimization, which enables your application to accept more clients per second during short performance spikes. On the other hand your clients get their messages with small delay.
 
