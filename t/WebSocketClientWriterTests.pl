@@ -2,14 +2,16 @@
 
 use lib '../lib';
 
-use Test::More tests => 23;
+use strict;
+use warnings;
+
+use Test::More tests => 24;
 use threads;
 use threads::shared;
 use WebSocketClient;
 use ThreadSafeHash;
 use WebSocketClientWriter;
 use WebSocketMessage;
-
 
 my $thread_safe_hash : shared = shared_clone( ThreadSafeHash->new );
 ok( defined $thread_safe_hash, 'thread safe hash is defined' );
@@ -64,6 +66,12 @@ $result->append($message2->get_data);
 is( $result->next_bytes, 'test message to all', 'message with correct data was inserted into second client\'s buffer' );
 
 my $client3 = WebSocketClient->new( id => 14 );
+
+print "Sending binary to client.\n";
+my $data = "\x20" x 100;
+WebSocketClientWriter::send_binary_to_client( $data, $client3 );
+ok( $client3->write_buffer->peek->is_binary, 'first message is binary' );
+
 WebSocketClientWriter::send_text_to_client( 'test message', $client3 );
 WebSocketClientWriter::send_text_to_client( 'test message', $client3 );
 print "Writing to client twice text.\n";

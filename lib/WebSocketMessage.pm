@@ -79,6 +79,15 @@ sub is_text {
 	return 0;
 }
 
+sub is_binary {
+    my ($self) = @_;
+	
+	if( $self->{frame} && $self->{frame}->is_binary ) {
+		return 1;
+	}
+
+	return 0;
+}
 
 sub get_data {
     my ($self) = @_;

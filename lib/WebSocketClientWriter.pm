@@ -29,6 +29,30 @@ sub send_text_to_clients {
        });
 }
 
+sub send_binary_to_client {
+    my ( $data, $client ) = @_;
+
+    my $message = WebSocketMessage->new( buffer => $data, type => 'binary' );
+    enqueue_message_for_client( $client, $message );
+
+}
+
+sub send_binary_to_clients {
+    my ( $data, $clients ) = @_;
+
+    unless ( defined $clients ) {
+        die "ThreadSafeHash with WebSocketClients was not supplied.";
+    }
+
+    my $message = WebSocketMessage->new( buffer => $data, type => 'binary' );
+
+    $clients->map_action(
+       sub {
+             my ( $id, $client ) = @_;
+             enqueue_message_for_client($client, $message);
+       });
+}
+
 sub send_handshake_response_to_client {
     my ( $text, $client ) = @_;
 
@@ -129,6 +153,14 @@ Enqueues WebSocket text message with given text into client's write buffer.
 =item C<send_text_to_clients>
 
 Enqueues WebSocket text message with given text into all clients write buffer.
+
+=item C<send_binary_to_client>
+
+Enqueues WebSocket binary message with given text into client's write buffer.
+
+=item C<send_binary_to_clients>
+
+Enqueues WebSocket binary message with given text into all clients write buffer.
 
 =item C<ping_client>
 
