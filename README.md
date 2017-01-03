@@ -1,8 +1,21 @@
-# WebSocket server empowered by libev
+# WebSocket server powered by libev
 
 This server enables programmers to create applications based on WebSocket protocol without deeper knowledge of the WebSocket protocol.
 
 # Synopsis
+    
+    package CpuBoundJob;
+    
+    use parent 'AbstractJob';
+    
+    sub DoJob {
+        my ( $self ) = @_;
+    
+        for ($count= 0; $count < 1000; $count++)
+	{
+ 		print "blocking the event loop if no thread worker is used";
+	}
+    }
 
     package EchoEngine;
     
@@ -12,6 +25,13 @@ This server enables programmers to create applications based on WebSocket protoc
         my ( $self, $text, $client ) = @_;
     
         WebSocketClientWriter::send_text_to_client( $text, $client );
+    }
+
+    sub process_binary_data {
+        my ( $self, $text, $client ) = @_;
+    
+        # Thread workers should count to 1000
+        return CpuBoundJob->new;
     }
     
     package EchoServer;
@@ -32,6 +52,7 @@ This server enables programmers to create applications based on WebSocket protoc
             close_after_no_pong              => 100,
             ping_after_seconds_of_inactivity => 60
         ),
+	thread_workers   => 0
     )->run_server();
 
 # Description
@@ -40,6 +61,8 @@ To create application based on this library, you need to check the documentation
 Then you need to implement your own class derived from AbstractWebSocketEngine.
 You can override almost all the methods from the AbstractWebSocketEngine class. To know which methods to override and what effect they will have on your application you need to check 
 documentation inside AbstractWebSocketEngine.
+
+For CPU-bound actions you should have multi-core server. Then create classes that derives from AbstractJob class which will be returned by your Engine class.
 
 # Examples
 

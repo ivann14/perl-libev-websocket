@@ -218,7 +218,6 @@ Contains default implementation.
 =item C<process_client_disconnecting>
 
 Method for customization, that will be raised after receiving close frame from the client. WebSocketClient instance is supplied as parameter.
-Can return instance of class derived from AbstractJob, which DoJob method will be run asynchronously.
 Contains default implementation.
 
 =item C<close_client_or_keep_alive>
