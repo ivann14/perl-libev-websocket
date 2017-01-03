@@ -91,7 +91,7 @@ sub process_ping_data {
 }
 
 sub process_client_disconnecting {
-    my ( $self, $client ) = @_;
+    my ( $self, $client, $code, $reason ) = @_;
 
     WebSocketClientWriter::close_client($client);
 }

@@ -37,13 +37,18 @@ sub process_ping_data {
 };
 
 sub process_client_disconnecting {
-    my ( $self, $bytes, $client ) = @_;
+    my ( $self, $client, $code, $reason ) = @_;
+    
+    if (defined $code && defined $reason) {
+	die $code . $reason;
+    }
+
     die 'close';
 };
 
 package tests;
 use strict;
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Test::Exception;
 
 # Prepare data
@@ -90,4 +95,16 @@ $fh = FileHandle->new("DummyData/binaryFrame.dat", "r");
 my $frame4 = Protocol::WebSocket::Frame->new();
 $frame4->append($data);
 throws_ok (sub { WebSocketIOManager::process_websocket_data($engine, $frame4, $client) }, '/bin/',
+   'processing websocket data with text frame, correct WebSocketEngine subroutine was called with correct input');
+
+
+# Close frame wih code and reason
+my $body = pack('na*', '1005');
+$body .= Encode::encode ('UTF-8', "test");
+
+my $frame5 = Protocol::WebSocket::Frame->new(buffer => $body, opcode=> 8, type=> 'close');
+
+my $frame6 = Protocol::WebSocket::Frame->new;
+$frame6->append($frame5->to_bytes);
+throws_ok (sub { WebSocketIOManager::process_websocket_data($engine, $frame6, $client) }, '/1005test/',
    'processing websocket data with text frame, correct WebSocketEngine subroutine was called with correct input');

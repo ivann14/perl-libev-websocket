@@ -48,12 +48,13 @@ sub process_websocket_data {
             $job = $engine->process_ping_data( $bytes, $client );
         }
         elsif ( $frame->is_close ) {
-            $job = $engine->process_client_disconnecting($client);
+	    my ($code, $reason) = unpack ("na*", $bytes);
+            $job = $engine->process_client_disconnecting( $client, $code, $reason );
         }
         
         if ($job) {
-			ThreadWorkers::enqueue_job($job);
-		}
+		ThreadWorkers::enqueue_job($job);
+	}
     }
 }
 
