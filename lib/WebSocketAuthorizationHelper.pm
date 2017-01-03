@@ -62,7 +62,7 @@ sub authorize_client {
 
             WebSocketClientWriter::send_handshake_response_to_client( $response, $client );
             $self->engine->clients_metadatas->{ $client->id }
-              ->write_watcher->start
+              ->write_watcher->start;
             $self->engine->clients_metadatas->{ $client->id }
               ->ping_watcher->start;
 
