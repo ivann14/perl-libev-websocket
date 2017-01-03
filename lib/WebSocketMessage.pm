@@ -143,6 +143,7 @@ WebSocketMessage - WebSocket message
 =head1 DESCRIPTION
 
 This class represents WebSocket message. Used for sending data to clients from server.
+Wraps Protocol::WebSocket::Frame class.
 
 =head2 Methods
 
@@ -150,7 +151,8 @@ This class represents WebSocket message. Used for sending data to clients from s
 
 =item C<new>
 
-Constructor. Takes type of the WebSocket message and data to send.
+Constructor. Takes type of the WebSocket message and data to send. You can set if the message is fragment or not.
+You can directly set instance of a Protocol::WebSocket::Frame object.
 
 =item C<get_data>
 
