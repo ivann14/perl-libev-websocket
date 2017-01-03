@@ -152,11 +152,11 @@ AbstractWebSocketEngine - Implementation of cruacial methods for running WebSock
 	}
 
 	sub process_text_data {
-		#Custom code for handling text data from client
+		# Custom code for handling text data from client
 	}
 
 	sub authenticate_client {
-		#Custom code for handling client authentication
+		# Custom code for handling client authentication
 	}
 
 
@@ -171,7 +171,7 @@ This class serves as an abstraction for creating custom WebSocketServer implemen
 
 =item C<new>
 
-Constructor. You can 
+Constructor.
 
 =item C<loop>
 
