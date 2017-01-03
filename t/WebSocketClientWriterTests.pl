@@ -5,7 +5,7 @@ use lib '../lib';
 use strict;
 use warnings;
 
-use Test::More tests => 24;
+use Test::More tests => 26;
 use threads;
 use threads::shared;
 use WebSocketClient;
