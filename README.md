@@ -27,7 +27,7 @@ This server enables programmers to create applications based on WebSocket protoc
     }
 
     sub process_binary_data {
-        my ( $self, $text, $client ) = @_;
+        my ( $self, $data, $client ) = @_;
     
         # Thread workers should count to 1000
         return CpuBoundJob->new;
