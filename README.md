@@ -11,10 +11,9 @@ This server enables programmers to create applications based on WebSocket protoc
     sub DoJob {
         my ( $self ) = @_;
     
-        for ($count= 0; $count < 1000; $count++)
-	{
- 		print "blocking the event loop if no thread worker is used";
-	}
+        for ($count= 0; $count < 1000; $count++) {
+ 			print "blocking the event loop if no thread worker is used";
+		}
     }
 
     package EchoEngine;
@@ -52,7 +51,7 @@ This server enables programmers to create applications based on WebSocket protoc
             close_after_no_pong              => 100,
             ping_after_seconds_of_inactivity => 60
         ),
-	thread_workers   => 0
+		thread_workers   => 0
     )->run_server();
 
 # Description
