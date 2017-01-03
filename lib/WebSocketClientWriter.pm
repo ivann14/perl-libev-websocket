@@ -6,21 +6,20 @@ use warnings;
 use WebSocketMessage;
 
 sub send_text_to_client {
-    my ( $text, $client ) = @_;
+    my ( $text, $client, $is_final_part ) = @_;
 
-    my $message = WebSocketMessage->new( buffer => $text, type => 'text' );
+    my $message = WebSocketMessage->new( buffer => $text, type => 'text', is_final_part => $is_final_part );
     enqueue_message_for_client( $client, $message );
-
 }
 
 sub send_text_to_clients {
-    my ( $text, $clients ) = @_;
+    my ( $text, $clients, $is_final_part ) = @_;
 
     unless ( defined $clients ) {
         die "ThreadSafeHash with WebSocketClients was not supplied.";
     }
 
-    my $message = WebSocketMessage->new( buffer => $text, type => 'text' );
+    my $message = WebSocketMessage->new( buffer => $text, type => 'text', is_final_part => $is_final_part );
 
     $clients->map_action(
        sub {
@@ -30,9 +29,17 @@ sub send_text_to_clients {
 }
 
 sub send_binary_to_client {
-    my ( $data, $client ) = @_;
+    my ( $data, $client, $is_final_part ) = @_;
 
-    my $message = WebSocketMessage->new( buffer => $data, type => 'binary' );
+    my $message = WebSocketMessage->new( buffer => $data, type => 'binary', is_final_part => $is_final_part );
+    enqueue_message_for_client( $client, $message );
+
+}
+
+sub send_continuation_to_client {
+    my ( $data, $client, $is_final_part ) = @_;
+
+    my $message = WebSocketMessage->new( buffer => $data, type => 'continuation', is_final_part => $is_final_part );
     enqueue_message_for_client( $client, $message );
 
 }

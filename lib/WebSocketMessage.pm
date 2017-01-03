@@ -19,8 +19,11 @@ sub new {
 			type => $args{type}
 		}, $class;
 	} else {
+		my $frame = Protocol::WebSocket::Frame->new( buffer => $args{buffer}, type => $args{type} );
+		$frame->fin( $args{is_final_part} || 1 );
+	
 		$self = bless { 
-			frame => Protocol::WebSocket::Frame->new( buffer => $args{buffer}, type => $args{type} )
+			frame => $args{frame} || $frame
 		}, $class;
 	}
 	
@@ -86,6 +89,26 @@ sub is_binary {
 		return 1;
 	}
 
+	return 0;
+}
+
+sub is_continuation {
+    my ($self) = @_;
+	
+	if( $self->{frame} && $self->{frame}->is_continuation ) {
+		return 1;
+	}
+
+	return 0;
+}
+
+sub is_final_part {
+    my ($self) = @_;
+	
+	if( $self->{frame} ) {
+		return $self->{frame}->fin;
+	}
+	
 	return 0;
 }
 

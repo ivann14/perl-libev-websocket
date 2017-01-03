@@ -72,6 +72,13 @@ my $data = "\x20" x 100;
 WebSocketClientWriter::send_binary_to_client( $data, $client3 );
 ok( $client3->write_buffer->peek->is_binary, 'first message is binary' );
 
+$client3->empty_write_buffer;
+print "Sending continuation to client.\n";
+my $data = "\x20" x 100;
+WebSocketClientWriter::send_continuation_to_client( $data, $client3, 0 );
+ok( $client3->write_buffer->peek->is_continuation, 'message is continuation' );
+not ok( $client3->write_buffer->peek->is_final_part, 'message is final part of continuation frames' );
+
 WebSocketClientWriter::send_text_to_client( 'test message', $client3 );
 WebSocketClientWriter::send_text_to_client( 'test message', $client3 );
 print "Writing to client twice text.\n";
