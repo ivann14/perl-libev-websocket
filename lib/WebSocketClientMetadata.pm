@@ -95,32 +95,32 @@ This class represents all data about websocket client that can not be shared bet
 
 =item C<id>
 
-Returns WebSocketClientMetadata identifier which can be tied with existing WebSocketClient.
+Returns a WebSocketClientMetadata identifier which can be tied with existing WebSocketClient.
 String representation of GUID is used by default.
 
 =item C<write_watcher>
 
-Returns object responsible for checking if client's socket is writeable.
+Returns an object responsible for checking if client's socket is writeable.
 
 =item C<read_watcher>
 
-Returns object responsible for checking if client's socket is readable.
+Returns an object responsible for checking if client's socket is readable.
 
 =item C<ping_watcher>
 
-Returns object responsible for checking if ping message needs to be sent to client.
+Returns an object responsible for checking if ping message needs to be sent to client.
 
 =item C<prepare_write_watcher>
 
-Returns object responsible for starting client's write watcher, if there is something to write.
+Returns an object responsible for starting client's write watcher, if there is something to write.
 
 =item C<handshake>
 
-Returns object representing websocket handshake request.
+Returns an object representing websocket handshake request.
 
 =item C<frame>
 
-Returns frame object, frame object contains bytes sent form client that will be stored in this object until there is enough bytes
+Returns a frame object, frame object contains bytes sent form client that will be stored in this object until there is enough bytes
 to build the whole WebSocket frame.
 
 =back
