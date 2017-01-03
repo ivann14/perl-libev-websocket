@@ -1,7 +1,9 @@
 #!/usr/bin/perl -w
 
 use lib '../lib';
+
 use strict;
+use warnings;
 
 use FileHandle;
 use WebSocketIOManager;

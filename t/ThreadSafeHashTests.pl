@@ -2,6 +2,9 @@
 
 use lib '../lib';
 
+use strict;
+use warnings;
+
 use threads;
 use threads::shared;
 

@@ -2,6 +2,9 @@
 
 use lib '../lib';
 
+use strict;
+use warnings;
+
 use Test::More tests => 22;
 use WebSocketClient;
 use ThreadSafeHash;
