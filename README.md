@@ -1,6 +1,6 @@
-# WebSocket server powered by libev
+# Communication interface for protocol WebSocket powered by libev
 
-This server enables programmers to create applications based on WebSocket protocol without deeper knowledge of the WebSocket protocol.
+This communication interface enables programmers to create applications based on WebSocket protocol without deeper knowledge of the WebSocket protocol.
 
 # Description
 
