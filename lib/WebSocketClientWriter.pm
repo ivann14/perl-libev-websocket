@@ -36,6 +36,22 @@ sub send_binary_to_client {
 
 }
 
+sub send_binary_to_clients {
+    my ( $data, $clients, $is_final_part ) = @_;
+
+    unless ( defined $clients ) {
+        die "ThreadSafeHash with WebSocketClients was not supplied.";
+    }
+
+    my $message = WebSocketMessage->new( buffer => $data, type => 'binary', is_final_part => $is_final_part );
+
+    $clients->map_action(
+       sub {
+             my ( $id, $client ) = @_;
+             enqueue_message_for_client($client, $message);
+       });
+}
+
 sub send_continuation_to_client {
     my ( $data, $client, $is_final_part ) = @_;
 
@@ -44,14 +60,14 @@ sub send_continuation_to_client {
 
 }
 
-sub send_binary_to_clients {
-    my ( $data, $clients ) = @_;
+sub send_continuation_to_clients {
+    my ( $data, $clients, $is_final_part ) = @_;
 
     unless ( defined $clients ) {
         die "ThreadSafeHash with WebSocketClients was not supplied.";
     }
 
-    my $message = WebSocketMessage->new( buffer => $data, type => 'binary' );
+    my $message = WebSocketMessage->new( buffer => $data, type => 'continuation', is_final_part => $is_final_part );
 
     $clients->map_action(
        sub {
@@ -132,10 +148,12 @@ __END__
 
 =head1 NAME
 
-WebSocketClientWriter - Enqueues WebSocket messages into client's write buffer
+WebSocketClientWriter - Enqueues WebSocket messages into client's write buffer. If needed you can send fragments by setting the last argument of the subroutine to 1.
 
 =head1 SYNOPSIS
-	WebSocketClientWriter::send_text_to_client("Message", $client);
+	WebSocketClientWriter::send_text_to_client("Hello is going to be", $client, 0);
+	WebSocketClientWriter::send_text_to_client("continued with World", $client, 1);
+	WebSocketClientWriter::send_binary_to_client($data, $client);
 	WebSocketClientWriter::send_text_to_clients("Message for all", $clients);
 	WebSocketClientWriter::ping_client($client);
 	WebSocketClientWriter::ping_client($text, $client);
@@ -149,10 +167,6 @@ This class enqueues WebSocket messages into client's write buffer.
 
 =over 12
 
-=item C<new>
-
-Constructor.
-
 =item C<send_text_to_client>
 
 Enqueues WebSocket text message with given text into client's write buffer.
@@ -163,19 +177,27 @@ Enqueues WebSocket text message with given text into all clients write buffer.
 
 =item C<send_binary_to_client>
 
-Enqueues WebSocket binary message with given text into client's write buffer.
+Enqueues WebSocket binary message with given binary data into client's write buffer.
 
 =item C<send_binary_to_clients>
 
-Enqueues WebSocket binary message with given text into all clients write buffer.
+Enqueues WebSocket binary message with given binary data into all clients write buffer.
+
+=item C<send_continuation_to_client>
+
+Enqueues a continuation message with given data into client's write buffer.
+
+=item C<send_continuation_to_clients>
+
+Enqueues WebSocket continuation message with given data into all clients write buffer.
 
 =item C<ping_client>
 
-Inserts a ping message into client's write buffer.
+Inserts WebSocket ping message into client's write buffer.
 
 =item C<send_pong_to_client>
 
-Inserts a pong message into client's write buffer.
+Inserts WebSocket pong message into client's write buffer.
 
 =item C<close_client>
 
