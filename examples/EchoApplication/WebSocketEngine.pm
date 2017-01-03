@@ -7,10 +7,15 @@ use lib '../../lib';
 
 use parent 'AbstractWebSocketEngine';
 
+
 sub process_text_data {
     my ( $self, $text, $client ) = @_;
 
     WebSocketClientWriter::send_text_to_client( $text, $client );
+
+    # Fragmentation example
+    #WebSocketClientWriter::send_text_to_client( $text, $client, 0 );
+    #WebSocketClientWriter::send_continuation_to_client( " echoed", $client, 1 );
 }
 
 sub on_after_write {
